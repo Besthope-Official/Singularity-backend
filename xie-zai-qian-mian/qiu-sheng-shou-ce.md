@@ -2,7 +2,9 @@
 
 ## Survival Tips
 
-Don't panic.
+{% hint style="info" %}
+**指导准则**: Don't panic.
+{% endhint %}
 
 ### 仔细阅读本文档
 

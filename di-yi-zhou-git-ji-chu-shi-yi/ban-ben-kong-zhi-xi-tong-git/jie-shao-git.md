@@ -37,7 +37,25 @@
 * 文件内容: Blob 对象 (**B**inary **L**arge **OB**ject)
 * 对象: 对象按照 [SHA1-Hash](https://en.wikipedia.org/wiki/SHA-1#Data\_integrity) 寻址
 
-`git hash-object`
+不同于传统的文件存储系统: key-value
+
+* 文件的内容是 value
+* 文件或目录有一个唯一的名称/路径作为 key
+
+你不是修改了文件, 而是**在另一个位置新建了文件**
+
+* 文件的内容是 value
+* 根据内容计算一个 hash key, 这个哈希值相当于路径
+
+{% hint style="info" %}
+什么是哈希函数? `strlen()` 就是一个哈希函数, 你可以知道字符串的长度, 但永远不知道原字符串是长什么样的.
+{% endhint %}
+
+## 示例1: `git hash-object/cat-file`
+
+这个示例中我们会演示两个"底层" (plumbing) 的指令: `git hash-object` 和 `git cat-file`. 即便这两个命令在我们日常使用中_几乎_不会见到, 但是对于我们了解 Git 的底层机制来说是很有用的.
+
+在这个示例中, 一个文本被 hash 化, 同时作为一个新的数据对象被存储进 Git 数据库中. 然后我们又用 `cat-file` 取回了原数据.
 
 ```bash
 $ git init git_demo
@@ -49,7 +67,31 @@ $ git cat-file -p 8d0e41234f24b6da002d962a26c2495ea16a425f
 hello git
 ```
 
+```bash
+$ echo 'version 1' > a.txt
+$ git hash-object -w a.txt
+83baae61804e65cc73a7201a7252750c76066a30
+$ echo 'version 2' > a.txt
+$ git hash-object -w a.txt
+1f7a7a472abf3dd9643fd615f6da379c4acb3e3a
+```
+
+```bash
+$ find .git/objects -type f
+.git/objects/1f/7a7a472abf3dd9643fd615f6da379c4acb3e3a
+.git/objects/83/baae61804e65cc73a7201a7252750c76066a30
+```
+
+```bash
+$ git cat-file -p 83baae61804e65cc73a7201a7252750c76066a30 > a.txt
+$ cat a.txt
+version 1
+```
+
+这就已经是一个简单的版本控制系统了! 但是这种方法有一个问题: 文件名, 以及文件所在的路径的信息并没有被保存. 于是我们引入了树对象 (tree object):
+
 * 历史记录的基本元素: 快照 (一个树)
+  * 一棵树可以包含其它树, 以及文件.
 
 ```plaintext
 <root> (tree)
@@ -65,17 +107,7 @@ hello git
 
 示例:
 
-不同于传统的文件存储系统: key-value
 
-* 文件的内容是 value
-* 文件或目录有一个唯一的名称/路径作为 key
-
-你不是修改了文件, 而是在另一个位置新建了文件
-
-* 文件的内容是 value
-* 根据内容计算一个 hash key, 这个哈希值相当于路径
-
-什么是哈希函数? `strlen()` 就是一个哈希函数, 你可以知道字符串的长度, 但永远不知道原字符串是长什么样的.
 
 packfiles
 
