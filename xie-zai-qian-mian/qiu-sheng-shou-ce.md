@@ -16,6 +16,8 @@
 * 安装 Windows Subsystem for Linux (wsl) ([推荐](https://zhuanlan.zhihu.com/p/337104547))
 * 在网络上整一个 Linux 虚拟主机, 例如 [Lightly](https://lightly.teamcode.com/?f=jb51)
 
+本次训练营的许多内容都将在WSL Ubuntu系统上展示.
+
 ### 熟悉CLI相关工具
 
 [The art of command line](https://github.com/jlevy/the-art-of-command-line/blob/master/README-zh.md)
