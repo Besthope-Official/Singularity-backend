@@ -14,6 +14,8 @@ description: 我们不是SVN
 
 我们将在两个系统（本机系统，linux）上都安装Git。因此这一章分为三个独立的小节：mac上的git安装、Windows上的git安装、linux上的git安装。
 
+这是参考的[文档](https://git-scm.com/book/zh/v2/%E8%B5%B7%E6%AD%A5-%E5%AE%89%E8%A3%85-Git)
+
 ### mac 安装
 
 在 Mac 上安装 Git 有多种方式。 最简单的方法是安装 Xcode Command Line Tools。 Mavericks （10.9） 或更高版本的系统中，在 Terminal 里尝试首次运行 'git' 命令即可。
@@ -53,14 +55,14 @@ $ sudo apt install git-all
 要了解更多选择，Git 官方网站上有在各种 Unix 发行版的系统上安装步骤，网址为 [https://git-scm.com/download/linux](https://git-scm.com/download/linux)。
 
 {% hint style="warning" %}
-你可能会发现网速异常的慢，甚至有的时候会莫名其妙的 `network erro` 。是时候配置自己的镜像站了！具体的细节请STFW ^-^ 。
+你可能会发现网速异常的慢，甚至有的时候会莫名其妙的 `network error`。是时候配置自己的镜像站了！具体的细节请STFW ^-^ 。
 {% endhint %}
 
 ### 检验是否安装完成
 
 在你的bash 中输入&#x20;
 
-<pre class="language-bash"><code class="lang-bash"><strong>$ <a data-footnote-ref href="#user-content-fn-1">git -v</a>
+<pre class="language-bash"><code class="lang-bash"><strong>$ git -v
 </strong></code></pre>
 
 当出现
@@ -83,22 +85,25 @@ $ sudo apt install git-all
 
 使用 `git config` 更改与 Git 提交关联的名称仅影响未来的提交，而不会更改用于过去提交的名称。
 
-### 为计算机上的每个存储库设置 Git 用户名 <a href="#setting-your-git-username-for-every-repository-on-your-computer" id="setting-your-git-username-for-every-repository-on-your-computer"></a>
+### 为计算机上的每个存储库设置 Git 用户名与邮箱 <a href="#setting-your-git-username-for-every-repository-on-your-computer" id="setting-your-git-username-for-every-repository-on-your-computer"></a>
 
 1. 打开一个 Bash。
 2.  设置 Git 用户名：
 
     ```shell
     git config --global user.name "Mona Lisa"
+    git config --global user.email "Mona_Lisa@gmail.com"
     ```
 3.  确认您正确设置了 Git 用户名：
 
     ```shell
     $ git config --global user.name
     > Mona Lisa
+    $ git config --global user.email
+    > Mona_lisa@gmail.com
     ```
 
-### 为一个仓库设置 Git 用户名 <a href="#setting-your-git-username-for-a-single-repository" id="setting-your-git-username-for-a-single-repository"></a>
+### 为一个仓库设置 Git 用户名与邮箱 <a href="#setting-your-git-username-for-a-single-repository" id="setting-your-git-username-for-a-single-repository"></a>
 
 1. 打开一个 Bash。
 2. 将当前工作目录更改为您想要在其中配置与 Git 提交关联的名称的本地仓库。
@@ -106,12 +111,13 @@ $ sudo apt install git-all
 
     ```shell
     git config user.name "Mona Lisa"
+    git config user.email "Mona_Lisa@gmail.com"
     ```
 4.  确认您正确设置了 Git 用户名：
 
     ```shell
     $ git config user.name
     > Mona Lisa
+    $ git config user.email
+    > Mona_lisa@gmail.com
     ```
-
-[^1]: 

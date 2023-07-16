@@ -11,6 +11,7 @@
 * [Git](di-ling-zhou-huan-jing-pei-zhi-yu-zhun-bei-gong-zuo/git.md)
 * [Github](di-ling-zhou-huan-jing-pei-zhi-yu-zhun-bei-gong-zuo/github.md)
 * [IDEA](di-ling-zhou-huan-jing-pei-zhi-yu-zhun-bei-gong-zuo/idea.md)
+* [Pycharm](di-ling-zhou-huan-jing-pei-zhi-yu-zhun-bei-gong-zuo/pycharm.md)
 
 ## 第一周 Git/基础拾遗
 

@@ -10,11 +10,13 @@ WSL的安装与配置推荐后端人员如果使用Windows一定要完成。其�
 
 ## 什么是WSL
 
-wikipada 对 WSL 做了如下定义：
+来自 [wikipada ](https://zh.wikipedia.org/wiki/%E9%80%82%E7%94%A8%E4%BA%8ELinux%E7%9A%84Windows%E5%AD%90%E7%B3%BB%E7%BB%9F)的定义：
 
 _<mark style="background-color:orange;">“适用于Linux的Windows子系统（英语：Windows Subsystem for Linux，简称WSL）是一个为在</mark>_[_<mark style="background-color:orange;">Windows 10</mark>_](https://zh.wikipedia.org/wiki/Windows\_10)_<mark style="background-color:orange;">和</mark>_[_<mark style="background-color:orange;">Windows Server 2019</mark>_](https://zh.wikipedia.org/wiki/Windows\_Server\_2019)_<mark style="background-color:orange;">以上能够原生运行</mark>_[_<mark style="background-color:orange;">Linux二进制可执行文件</mark>_](https://zh.wikipedia.org/wiki/Linux)_<mark style="background-color:orange;">（</mark>_[_<mark style="background-color:orange;">ELF</mark>_](https://zh.wikipedia.org/wiki/%E5%8F%AF%E5%9F%B7%E8%A1%8C%E8%88%87%E5%8F%AF%E9%8F%88%E6%8E%A5%E6%A0%BC%E5%BC%8F)_<mark style="background-color:orange;">格式）的</mark>_[_<mark style="background-color:orange;">兼容层</mark>_](https://zh.wikipedia.org/wiki/%E5%85%BC%E5%AE%B9%E5%B1%82)_<mark style="background-color:orange;">。”</mark>_
 
 通俗的说 WSL 是一款由微软公司开发的 Linux 虚拟机。他与其他虚拟机的不同之处在于它是由微软公司开发并维护的。正因如此，它拥有相比其他虚拟机更加契合Windows的特点。也因此获得了更强的性能与全套的微软开发工具支持。
+
+推荐阅读微软推出的[WSL文档](https://learn.microsoft.com/zh-cn/windows/wsl/)，这篇文章的很大程度上是基于它的。
 
 ## WSL1 与 WSL2
 
@@ -71,7 +73,7 @@ wsl --install
 如果你运行的是旧版，或只是不想使用 install 命令并希望获得分步指引，请参阅[旧版 WSL 手动安装步骤](https://learn.microsoft.com/zh-cn/windows/wsl/install-manual)。
 
 {% hint style="warning" %}
-首次启动新安装的 Linux 发行版时，将打开一个控制台窗口，要求你等待将文件解压缩并存储到计算机上。这一过程可能会消耗一段时间，但未来的所有启动时间应不到一秒，所以请内心等待。
+首次启动新安装的 Linux 发行版时，将打开一个控制台窗口，要求你等待将文件解压缩并存储到计算机上。这一过程可能会消耗一段时间，但未来的所有启动时间应不到一秒，所以请耐心等待。
 {% endhint %}
 
 {% hint style="warning" %}
@@ -84,7 +86,7 @@ wsl --install
 本次项目默认安装ubuntu，如想要安装其他发行版请自行寻找教程。
 {% endhint %}
 
-按下键盘上的Windows键并输入 Microsoft store 并按下回车。打开微软商店后输入 ubuntu搜索。接下来你会发现各个不同的ubuntu版本，它们有两种：LTS版本与非LTS版本。
+按下键盘上的 Windows 键并输入 Microsoft store 并按下回车。打开微软商店后输入 ubuntu 搜索。接下来你会发现各个不同的 ubuntu 版本，它们有两种：LTS版本与非LTS版本。
 
 ### LTS 与非 LTS&#x20;
 
@@ -107,7 +109,7 @@ LTS 版本更安全、更稳定，因此更可靠。此外，所有 LTS 版本�
 在安装完成以后会出现一个登录引导。根据引导输入你的新用户名与新密码即可。
 
 {% hint style="danger" %}
-注意一定要记住并保管好你的用户名与密码！
+注意一定要记住并保管好你的用户名与密码！例如 `sudo`指令就需要你输入预先设置的密码，以获取足够的权限。（虽然我们确实有[重置 wsl 的 root 密码](https://itsfoss.com/reset-linux-password-wsl/)方法）
 {% endhint %}
 
 至此WSL的安装就完成了。不要害怕，新的世界已经打开大门。

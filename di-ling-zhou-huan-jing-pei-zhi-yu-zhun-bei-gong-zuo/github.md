@@ -4,6 +4,10 @@ description: 全世界最大的同性交友网站
 
 # Github
 
+{% hint style="info" %}
+推荐所有同学完成，免费的谁不爱呢。
+{% endhint %}
+
 ## Github 注册
 
 首先进入github官网 [https://github.com/](https://github.com/)点击右上角的sign up(注册)，sign in是登录。填写自己的邮箱、密码、用户名等信息，然后用邮箱验证即可完成。
