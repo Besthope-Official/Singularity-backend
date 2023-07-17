@@ -4,6 +4,8 @@
 在阅读本篇之前, 确保你已经安装好了 Git 并且配置了`.gitconfig` (邮箱及用户等).
 {% endhint %}
 
+## 为什么要学习 Git?
+
 动机: 怎么多人协作?
 
 * 不是像几个人做英语的小组作业那样灾难
@@ -53,6 +55,8 @@
 
 * Git 的后端模型很简洁.
 * 理解一定的原理, 至少能让你在复制命令的时候不会感到一脸茫然.
+
+## Git 的底层原理
 
 ### 存储结构
 
@@ -142,13 +146,17 @@ version 1
 
 这就已经是一个简单的版本控制系统了! 并且我们看到了, 在Git版本控制系统中, 文件都以对象存储. 但是这种方法有一个问题: 文件名, 以及文件所在的路径的信息并没有被保存. 为了解决这个问题, 于是引入了**树对象** (tree object):
 
-* 历史记录的基本元素: **树(快照)**
-  * 一棵树可以包含其它树, 以及文件. (树是_递归定义_的!)
-  * 树将文件名和 hash 值进行了关联. 正如下图所示:
+* 一棵树可以包含其它树, 以及文件. (树是_递归定义_的!)
+* 树将文件名和 hash 值进行了关联. 正如下图所示:
 
 <figure><img src="../../.gitbook/assets/data-model-2.png" alt=""><figcaption><p>树模型, 让Blob对象和文件名称关联, 同时它还可以包含其它树, 图来自 Pro Git</p></figcaption></figure>
 
-接下来介绍的**提交**(Commit), 可能是Git中最重要的一个概念. 但有了上面的基础, 它很好理解: 实际上就是一棵树, 附带一些其它信息, 例如提交者, 提交时间等.
+### 历史记录
+
+接下来介绍的**提交**(Commit), 可能是Git中最重要的一个概念. 但有了上面的基础, 它很好理解:&#x20;
+
+* 实际上就是一棵树, 附带一些其它信息, 例如提交者, 提交时间, 它的父提交等.
+* 一次提交, 就是当前项目的一次**快照**(Snapshot).
 
 ## 示例 2: Object Walkthrough
 
@@ -156,7 +164,7 @@ version 1
 不用对看不懂示例中的指令感到担忧, 你很快就会上手并且_变着花地_去使用这些 Git 指令.
 {% endhint %}
 
-我们用一个现有的 Git 仓库来演示这些对象的概念. 看看 [Linus 的 first commit](https://github.com/git/git/commit/e83c5163316f89bfbde7d9ab23ca2e25604af290): Git 的源码在 Github (代码托管网站) 有存档, 你可以将其克隆下来:
+我们用一个现有的 Git 仓库来演示这些对象的概念. 看看 [Linus 的 first commit](https://github.com/git/git/commit/e83c5163316f89bfbde7d9ab23ca2e25604af290): Git 的源码在 Github (代码托管网站) 有存档, 你可以将其克隆下来(虽然可能这会比较慢):
 
 <pre class="language-bash"><code class="lang-bash"><strong>$ git clone https://github.com/git/git.git
 </strong><strong>...
@@ -169,7 +177,7 @@ Date:   Thu Apr 7 15:13:13 2005 -0700
 
 </code></pre>
 
-如果你去查看这条 commit 记录(运用我们上面提到的 `cat-file` 命令), 它的结果
+提交有着属于它的 SHA-1 值, 它也是一个对象, 存储在 `/.git/objects` 目录下(你可以去找找看). 如果你去查看这条 commit 记录(运用我们上面提到的 `cat-file` 命令), 它的结果
 
 ```bash
 $ git cat-file -p e83c5163316f89bfbde7d9ab23ca2e25604af290
@@ -208,6 +216,38 @@ theory actually a viable way of describing the world. So copyright it.
 * 一个大型项目(例如一个kernel), 各个版本都要进行备份, 这难道不会导致内存被占满吗?
 * 提交历史就是这么智能. 它会比较各个 commit 之间的不同, 然后仅储存这些**不同的对象**, 其余的引用历史版本即可.
 
+{% hint style="info" %}
+事实上, Git内部储存还有[包文件](https://git-scm.com/book/zh/v2/Git-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E5%8C%85%E6%96%87%E4%BB%B6) (packfiles) 的机制, 它类似于一个压缩打包的过程, `git gc` 或者上传远程服务器时, Git 都会这么做. 如果你仔细阅读 `git push` 的 log 的话
+
+```
+Delta compression using up to 16 threads
+Compressing objects: 100% (122/122), done.
+Writing objects: 100% (140/140), 1.03 MiB | 1.44 MiB/s, done.
+Total 140 (delta 27), reused 40 (delta 1), pack-reused 0
+```
+
+Delta 就是差值, Git 只完整保存其中一个对象, 再保存另一个对象与之前版本的差异内容.
+{% endhint %}
+
+* 一个 commit ID 不仅和文件内容相关, 还和整个提交历史和仓库相关.
+
+<figure><img src="../../.gitbook/assets/data-model-3.png" alt=""><figcaption><p>历史记录的可视化. 图来自 Pro Git</p></figcaption></figure>
+
+所以历史记录(log)就是这些快照组成的有向无环图(DAG), 对于单分支而言, 它就是一个链表, 对于_多分支_的仓库来说, 你可以按照下面的方式可视化历史记录:
+
+```bash
+$ git log --graph --oneline --decorate
+* aa9166bcc0 (HEAD -> master, origin/master, origin/HEAD) The ninth batch
+*   b00ec259e7 Merge branch 'jk/fsck-indices-in-worktrees'
+|\
+| * 6e6a529b57 fsck: avoid misleading variable name
+* |   7f5ad0ca8d Merge branch 'js/empty-index-fixes'
+|\ \
+| * | 2ee045eea1 commit -a -m: allow the top-level tree to become empty again
+| * | 7667f4f0a3 split-index: accept that a base index can be empty
+...
+```
+
 这个示例也显示一点: Git 的提交(`git commit`)其实就是:
 
 * 将被改写的文件保存为数据对象(`object-hash`)
@@ -215,26 +255,122 @@ theory actually a viable way of describing the world. So copyright it.
 * 记录树对象(`write-tree`)
 * 最后创建一个指明了顶层树对象和父提交的提交对象(`commit-tree`)
 
-commit 是不可变的(immutable).
+{% hint style="warning" %}
+commit 是_不可变的_ (immutable), 因为一旦创建, 它就是一个冰冷冷的对象, 躺在仓库里了. 假设你想撤回刚才的提交, 其实你是新建了一个删除它的的提交. 这点对于了解 `git reset` 和 `git rebase` 是至关重要的.
+{% endhint %}
 
-一个 commit ID 不仅和文件内容相关, 还和整个提交历史和仓库相关.
+### 引用和分支
 
-> Commits have "memory", but no premonition.
+假设你正在开发一款游戏, 按照进度, 你目前开发到第二个关卡, 但突然发现第一关出 BUG 了. 为了解决这个问题, 你打算对第一关之前的代码进行审阅, 也就是说, 你需要查看某一提交前的历史.
 
-packfiles
+首先你需要定位到这次的提交, 根据 commit 信息, 你找到了这次的提交, 假如说它是`cac56c61a49613280ec3eff9752c12612864b572`, 但显然长度为 40 的 Hash 实在不适合人类记忆, 虽然说 Git 支持短 hash (`cac56c`), 你也只需要 `git log cac56c` 就可以完成这项任务, 但这并没有改变事情的本质. 假设你需要反复查看, 那必然的, 你可能需要反复的复制这个 Hash 值.
 
-* 历史记录: 快照组成的有向无环图
-* 引用: 指向提交的指针
-  * 当前位置的索引: HEAD
-* 标签: 对象的一个别名
-  * 通常来说是某次 commit 后设定的一个版本号
-* 仓库: 对象和引用
-* 暂存区
+有没有一种更优雅的内部操作来解决这个问题呢? Git 采用的是**引用** (reference).
+
+* 也就是用一个文件作为这个SHA-1值的**指针.**
+
+你可以用 `git update-ref` 来实现这一点:
+
+```bash
+$ git update-ref refs/lv1 cac56c
+$ git log lv1 --pretty=oneline --decorate
+cac56c61a49613280ec3eff9752c12612864b572 (refs/lv1) 道具系统+第一关开发完毕
+f7d329dee0564e3b8f2737745029ffea03b33fa5 关卡逻辑
+11e4fe4309d9cb7db31f19e7c171b36dd61c2db6 战斗系统
+$ cat .git/refs/lv1
+cac56c61a49613280ec3eff9752c12612864b572
+```
+
+如果你还记得, 在上面演示的仓库中, 我们看到它的历史记录是错综复杂的好几条线, 当时我们提到了**分支**(branch), 现在就可以回答分支的本质:
+
+* 它就是**一个特殊的引用**.
+* ...只不过以当前最新提交的SHA-1值作引用.
+
+假设你的游戏开发团队来了两名新人, alice 和 bob, 他们现在同时开发第三关, 要怎么才能让他们的工作互不影响, 并且最终能将成果合并到一起呢?
+
+我们可以新建两个分支, `git branch alice` 以及 `git branch bob`, 然后让他们俩人分别在各自的分支里干活.
+
+如果你查看了 `/refs` 这个目录的话, 你还会发现两个 heads 和 tags 的文件夹. 这时候你会发现我们创建的分支就在这个 heads 里头:
+
+```
+└── refs
+    ├── heads
+    │   ├── alice
+    │   ├── bob
+    │   └── master
+    ├── lv1
+    └── tags
+```
+
+Git 用一个特殊的**HEAD文件**保存最新提交的引用. 也就是说它又是一个指向另一个分支的指针.
+
+```bash
+$ cat .git/HEAD
+ref: refs/heads/master
+```
+
+这里 master 分支就是 `git init` 默认创建的分支. 当你创建第一个 commit, 就创建了一个 `refs/heads/master` 的一个引用, 并指向这个提交. 当你第二次提交的时候, 它会读取 HEAD 引用指向的 SHA-1 值去设置它的父提交, 并更新当前引用:
+
+```python
+tmp = branch_master         # old commit
+branch_master = new_commit  # update
+new_commit.parent = tmp
+```
+
+切换分支 `git checkout` 实际上就是更新 HEAD 文件:
+
+```bash
+$ git checkout bob
+Switched to branch 'bob'
+$ cat .git/HEAD
+ref: refs/heads/bob
+```
+
+{% hint style="info" %}
+当我们的仓库为空时, 我们能不能创建一个新的分支? 答案为否. 想想看, 这是为什么? 你可以试试看到了什么报错.&#x20;
+
+额外的一个问题是, 为什么我们又可以创建一个空分支? `git branch --orphan`
+{% endhint %}
+
+分支就是 `git update-ref refs/heads/<branch> HEAD`. 用图表示, 那么就是一条主线出现了一条分叉:
+
+```
+* 8a71a79 (HEAD -> master) 添加用户反馈
+| * 06f5564 (alice) 第三关关卡逻辑
+|/
+| * 1d388c6 (bob) 第三关开发
+|/
+* 4892c7d 第二关逻辑
+* cac56c6 (refs/lv1) 道具系统+第一关开发完毕
+* f7d329d 关卡逻辑
+* 11e4fe4 战斗系统
+```
+
+剩下我们再来讨论下 `refs/` 里剩下的一类引用: **标签**(tag). 假如我们的游戏已经可以发布demo了, 我们想为其附上一个别名, 就叫它 demo1.0, 那么我们可以使用 `git tag` 命令(这里创建了一个附注标签)
+
+```bash
+$ git tag -a demo1.0 4892c7dc37d034f41443c67b89f97e2562929e2c -m 'demo 1.0 version released'
+```
+
+我们之前提到过 tag 也是一个对象. 用 `cat-file` 可以看到这个对象的内容
+
+```bash
+$ git cat-file -p demo1.0
+object 4892c7dc37d034f41443c67b89f97e2562929e2c
+type commit
+tag demo1.0
+tagger Besthope <874256269@qq.com> 1689530116 +0800
+
+demo 1.0 version released
+```
+
+## 补充和总结
+
+* Git 的一切都是对象
+* 引用就是一个指针
+* Git 仓库: 对象和引用
+* 提交对象之前要先把对象存储至暂存区
 
 [MIT CS教育缺失的一课: 版本控制(Git)](https://missing-semester-cn.github.io/2020/version-control/)
 
 [Git crash course](https://www.youtube.com/watch?v=RGOj5yH7evk\&list=PLICH95IlQ1dRtYhrkmiqubOB6TGoZKrS5\&index=38)
-
-用 ChatGPT 辅助你完成代码!
-
-### 作业
