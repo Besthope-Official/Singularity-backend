@@ -1,4 +1,4 @@
-# 介绍 Git
+# Git 底层原理
 
 {% hint style="info" %}
 在阅读本篇之前, 确保你已经安装好了 Git 并且配置了`.gitconfig` (邮箱及用户等).
@@ -371,6 +371,8 @@ demo 1.0 version released
 * Git 仓库: 对象和引用
 * 提交对象之前要先把对象存储至暂存区
 
-[MIT CS教育缺失的一课: 版本控制(Git)](https://missing-semester-cn.github.io/2020/version-control/)
+## 补充学习
 
-[Git crash course](https://www.youtube.com/watch?v=RGOj5yH7evk\&list=PLICH95IlQ1dRtYhrkmiqubOB6TGoZKrS5\&index=38)
+[MIT CS教育缺失的一课: 版本控制(Git)](https://missing-semester-cn.github.io/2020/version-control/): 整个 Missing-semester 课程都推荐大家学习, 非常好的一门课, 学习到很多好用的工具, 除了拓宽视野更能帮助你在未来的职业生涯中节省时间.
+
+[Git crash course](https://www.youtube.com/watch?v=RGOj5yH7evk\&list=PLICH95IlQ1dRtYhrkmiqubOB6TGoZKrS5\&index=38): 看完就会用 Git.

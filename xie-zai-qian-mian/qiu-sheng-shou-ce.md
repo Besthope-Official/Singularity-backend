@@ -50,7 +50,7 @@
 
 ### 安装好必备的工具
 
-* 安装好 JDK/Python.
+* 安装好 JDK(其实IDEA安好了是自带的)/Python 3.6 以上的版本.
 * Git: 重要的版本控制系统. 至少在任何CS开发相关的工作中你都会用上它.
   * 在你的开发系统上(例如 WSL 上)[安装](https://git-scm.com/book/zh/v2/%E8%B5%B7%E6%AD%A5-%E5%AE%89%E8%A3%85-Git)好一个 Git, 然后完成 Git 的初次[配置](https://git-scm.com/book/zh/v2/%E8%B5%B7%E6%AD%A5-%E5%88%9D%E6%AC%A1%E8%BF%90%E8%A1%8C-Git-%E5%89%8D%E7%9A%84%E9%85%8D%E7%BD%AE). 下一周我们会对 git 进行一个较为详尽的介绍 (buttom up)!
 * 安装好 ssh server: 在后面我们可能会讲到连接服务器的相关操作.
@@ -68,6 +68,10 @@
 <figure><img src="../.gitbook/assets/vim-meme (1).png" alt=""><figcaption><p>Vim 很强大, 但学起来也是真的累 (</p></figcaption></figure>
 
 我们更推荐你使用 [Anaconda](https://www.anaconda.com/)(或者 [miniconda](https://docs.conda.io/en/latest/miniconda.html)), [Visual Studio](https://visualstudio.microsoft.com/zh-hans/vs/features/python/), [Visual Studio Code](https://code.visualstudio.com/)(严格上说它不算是IDE, 但配置好插件后等同于一个IDE), 或者 [PyCharm](https://www.jetbrains.com/pycharm/download/) 作为你的 Python 开发环境. 使用这些 IDE 的好处就在于简单, 方便, 同时足够强大.
+
+{% hint style="warning" %}
+Jupyter Notebooks 很强大, 但它不适合作为我们完整项目的开发环境, 因为我们需要多文件引用, 多模块编程. 它更适合AI方向的同学进行数据分析以及可视化展示.
+{% endhint %}
 
 值得一提的是, Pyharm 可以通过学生认证免费获得 Jetbrain 全家桶专业版: [学生专业版申请指南](https://blog.jetbrains.com/zh-hans/blog/2022/08/24/2022-jetbrains-student-program/)
 

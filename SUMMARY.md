@@ -8,7 +8,8 @@
 ## 第一周 Git/基础拾遗
 
 * [版本控制系统 Git](di-yi-zhou-git-ji-chu-shi-yi/ban-ben-kong-zhi-xi-tong-git/README.md)
-  * [介绍 Git](di-yi-zhou-git-ji-chu-shi-yi/ban-ben-kong-zhi-xi-tong-git/jie-shao-git.md)
-  * [Git 与 Github 的配合使用](di-yi-zhou-git-ji-chu-shi-yi/ban-ben-kong-zhi-xi-tong-git/git-yu-github-de-pei-he-shi-yong.md)
+  * [Git 底层原理](di-yi-zhou-git-ji-chu-shi-yi/ban-ben-kong-zhi-xi-tong-git/git-di-ceng-yuan-li.md)
+  * [Git 的接口](di-yi-zhou-git-ji-chu-shi-yi/ban-ben-kong-zhi-xi-tong-git/git-de-jie-kou.md)
+  * [Git 工作流](di-yi-zhou-git-ji-chu-shi-yi/ban-ben-kong-zhi-xi-tong-git/git-gong-zuo-liu.md)
 * [Python 里技](di-yi-zhou-git-ji-chu-shi-yi/python-li-ji.md)
-* [Java进阶](di-yi-zhou-git-ji-chu-shi-yi/java-jin-jie.md)
+* [Java 进阶](di-yi-zhou-git-ji-chu-shi-yi/java-jin-jie.md)
