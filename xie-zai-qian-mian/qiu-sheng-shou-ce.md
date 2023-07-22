@@ -51,6 +51,17 @@
 ### 安装好必备的工具
 
 * 安装好 JDK(其实IDEA安好了是自带的)/Python 3.6 以上的版本.
+* 对于JAVA 方向的同学, 安装好 Maven. 这是一个很方便的依赖管理工具. 参考[这篇文章](https://zhuanlan.zhihu.com/p/615382243).
+  * 对于 Python 方向的同学, 你需要安装 pip, 但 Python 自带 :)
+* 安装好 MySQL 8.0 以上版本. 它是本次训练营将用到的数据库管理系统.
+  * 虽然说主流版本是 5.7, 但我们并不需要考虑兼容相关的问题.
+  * 如果你是 WSL, 安装方式很简单, 只需要你[按照文档](https://learn.microsoft.com/zh-cn/windows/wsl/tutorials/wsl-database) `apt install` 即可 (这也是为什么我们推荐你使用 Linux).
+  * 如果你是 Windows, 参考[这篇文章](https://blog.csdn.net/m0\_52559040/article/details/121843945). 唯一要注意的一点是, 你需要将 mysql 加入到你的系统环境变量中.
+
+{% hint style="warning" %}
+2023年了, 你不需要手动的去修改 `my.ini`等相关配置文件! 你要避开这些历史遗留的教程.
+{% endhint %}
+
 * Git: 重要的版本控制系统. 至少在任何CS开发相关的工作中你都会用上它.
   * 在你的开发系统上(例如 WSL 上)[安装](https://git-scm.com/book/zh/v2/%E8%B5%B7%E6%AD%A5-%E5%AE%89%E8%A3%85-Git)好一个 Git, 然后完成 Git 的初次[配置](https://git-scm.com/book/zh/v2/%E8%B5%B7%E6%AD%A5-%E5%88%9D%E6%AC%A1%E8%BF%90%E8%A1%8C-Git-%E5%89%8D%E7%9A%84%E9%85%8D%E7%BD%AE). 下一周我们会对 git 进行一个较为详尽的介绍 (buttom up)!
 * 安装好 ssh server: 在后面我们可能会讲到连接服务器的相关操作.
