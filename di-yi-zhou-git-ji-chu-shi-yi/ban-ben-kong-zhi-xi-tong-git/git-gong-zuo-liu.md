@@ -2,7 +2,7 @@
 description: 出来混要讲规矩
 ---
 
-# Git 与 Github 的配合使用
+# Git 工作流
 
 {% hint style="info" %}
 在阅读本文章前确保领会了git的基本使用方法
@@ -67,7 +67,7 @@ fork 相当关键，如果不 fork 就去改别人代码在权限设置不严的
 
 所有开发者开发好的功能会在源仓库的`develop`分支中进行汇总，当`develop`中的代码经过不断的测试，已经逐渐趋于稳定了，接近产品目标了。这时候，我们就可以把`develop`分支合并到`master`分支中，发布一个新版本。所以，一个产品不断完善和发布过程就正如下图：
 
-<figure><img src="../../.gitbook/assets/image (4).png" alt=""><figcaption><p>develop类似master的缓冲区</p></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (4) (1).png" alt=""><figcaption><p>develop类似master的缓冲区</p></figcaption></figure>
 
 ### 暂时性分支
 
@@ -75,7 +75,7 @@ fork 相当关键，如果不 fork 就去改别人代码在权限设置不严的
 
 **feature**：功能性分支，是用于开发项目的功能的分支，是开发者主要战斗阵地。开发者在本地仓库从`develop`分支分出功能分支，在该分支上进行功能的开发，开发完成以后再合并到`develop`分支上，这时候功能性分支已经完成任务，可以删除。功能性分支的命名一般为`feature-*`，\*为需要开发的功能的名称。
 
-<figure><img src="../../.gitbook/assets/image (3).png" alt=""><figcaption><p>各个成员独立开发统一合并</p></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (3) (1).png" alt=""><figcaption><p>各个成员独立开发统一合并</p></figcaption></figure>
 
 举一个例子，假设我是一名PingHackers网站的开发者，已经把源仓库fork了，并且clone到了本地。现在要开发PingHackers网站的“讨论”功能。我在本地仓库中可以这样做：
 
