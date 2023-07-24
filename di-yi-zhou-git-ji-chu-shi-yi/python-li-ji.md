@@ -4,6 +4,8 @@
 
 我们主要围绕 Python 的 OOP 内容展开, 主要原因是在教学过程中被省略掉了这一重要的部分. 虽然说后端开发并不需要你掌握什么特别 fancy 的东西, 但是面向对象的概念却在后端开发中处处可见.
 
+剩下的内容我们会讨论一些 Python 的语言特性, 例如一些元编程的内容. 我们不会深入到 CPython 的具体实现, 只会蜻蜓点水般地简单介绍.
+
 {% hint style="info" %}
 深入任何一门语言, 都需要你大量地进行编码, 实验, 去熟练这些特性. 本文如果能起到抛砖引玉的作用, 那就是万幸. 若有时间, 我们很推荐你去自学完成给出的补充资料!
 {% endhint %}
@@ -98,12 +100,14 @@ with open('foo.txt', 'r') as f:
 # and you don't have to manually close the file here
 ```
 
+还有错误处理的相关语句: try, except 和 finally.
+
 Python 里的函数定义很简单, 你都不需要人为去指定参数类型(当然你也可以做标记, Type Hints). Python 的另外一个好处是灵活的函数参数. 例如, 一个_可变参数_以一个元组(或字典)的形式传入函数
 
 ```python
-def touch_fish(*args):
+def touch_fish(*args, **kwargs):
     pass
-touch_fish(1, 2, 3)
+touch_fish(1, 2, 3, arg1=4, arg2=5)
 ```
 
 以上这些内容, 听说就是财大 Python 课程的全部. Nahida 听后, 立马把复习的讲义看了一遍, 然后将它们转换为了罐装知识放在这里.
@@ -124,6 +128,8 @@ a.upper()            # a method applied to the string
 
 items = [1, 2, 3]    # list object
 items.append(4)      # a method applied to the list
+
+isinstance(5, int)
 ```
 
 举个例子, 你要开发一款游戏, 现在设计怪物好了, 有史莱姆和哥布林, 现在需要你写代码, 你怎么写?
@@ -250,29 +256,41 @@ class Slime(Monster):
 
 接下来我们会涉及一些 Python 元编程(Metaprogramming)的内容. 但是Don't panic! 这并没有你想象中那么吓人(至少不如C++), 而且在实际中, 我们并不会编写这一部分的代码.
 
-啥是元编程? 简单来说, 就是**对代码编程**. 例如宏就是一个典型的元编程例子.
+啥是元编程? 简单来说, 就是**对代码编程**. 例如宏就是一个典型的元编程例子(当然Python里没有宏): 用一个指定的字符串替代一个代码
+
+```c
+#define PI 3.14159 // this code was written in C/C++
+```
 
 装饰器是一个函数, 只不过这个函数会创建一个 wrapper 把另一个函数围起来. wrapper 就是一个新函数, 和原函数功能基本一样, 只不过稍微多了些功能.
+
+* wrapper 需要一个函数作为参数传入(是的, Python 的函数也是一个对象, 换作 C 语言那就是函数指针), 然后返回一个函数.
+* 返回的这个函数返回我们传入的参数. 只不过在这个函数里, 它有些其他的行为.
+
+下面就是一个装饰器的例子: 它能够在每次调用函数时打印信息
 
 ```python
 def add(a, b):
     return a + b
+    
 # wrapper function
 def logged(func):
+
     def wrapper(*args, **kwargs):
         print('Calling', func.__name__)
         return func(*args, **kwargs)
+        
     return wrapper
 ```
 
 然后你就可以这么去调用
 
-```
+```bash
 >>> logged_add = logged(add)
 >>> logged_add(3, 4)
 ```
 
-装饰器其实就是一个语法糖
+所以装饰器其实就是一个语法糖
 
 ```python
 def add(a, b):
@@ -288,51 +306,95 @@ def add(x, y):
 
 两段代码其实是一样的!
 
+再贴一个常用的装饰器: 它可以显示程序运行的毫秒数
+
+```python
+def metric(fn):
+    """running time for each main function"""
+    
+    @functools.wraps(fn)
+    def wrapper(*args, **kw):
+        print('start executing %s' % (fn.__name__))
+        start_time = time.time()
+        result = fn(*args, **kw)
+        end_time = time.time()
+        t = 1000 * (end_time - start_time)
+        print('%s executed in %s ms' % (fn.__name__, t))
+        return result
+    return wrapper
+```
+
 为什么要使用装饰器:
 
 * 调试找BUG. (例如上面打印 log)
 * 避免代码重复. (不用你反复写调试的打印语句)
 * 某一功能的开关. (例如上面讲到的 `classmethod`)
 
-## 魔法方法(Magic methods)
+## 魔术方法(Magic methods)
 
-## 迭代器和生成器
+> There is no magic in computer science.
 
-我们对迭代器简单提一嘴.
+魔术方法的另一种说法是 Special methods, 好吧, 这样就变得朴实无华了.
 
-* 容器(container): 存放数据的结构
-* 之所以能够判断一个元素是否 `in` 某个容器, 是因为它们内部实现了 `__contains__` 方法.
+魔法方法允许你在类中, 将 `__<name>__` 这类的自定义函数(也叫做 Dunder methods)绑定到类的特殊方法中.
+
+你觉得你没用过, 其实你天天都在用! 例如, 初始化一个类的 `__init__` 方法, 就是一个魔术方法.
+
+这么说来, 怎么感觉和内置变量(builtins)很类似? 例如, 你应该知道 Python 的主程序入口是
 
 ```python
-class A:
-
-    def __init__(self):
-        self.items = [1, 2]
-
-    def __contains__(self, item):
-        return item in self.items
-
-a = A()
-print(1 in a)   # True
-print(2 in a)   # True
-print(3 in a)   # False
+if __name__ == '__name__':
+    # code
 ```
 
-你有没想过为什么 list 可以用 for loop 去遍历内部的每一个元素. 因为它实现了迭代需要的几个方法: `__iter__` 以及 `__next__`. 也就是类似于继承了一个接口类, 然后去实现接口里的这些方法.
+这里 \_\_name\_\_ 就是一个内置的变量, 它表示当前模块的名字([『if \_\_name\_\_ == "\_\_main\_\_"』到底啥意思❓](https://www.bilibili.com/video/BV1te4y1M7yx/)). 此外, 我们还有 `__doc__`, `__file__`, 等等.
 
-* `__iter__`: 这个方法返回对象本身, 即 `self`
-* `__next__`: 这个方法每次返回迭代的值, 在没有可迭代元素时, 抛出 `StopIteration` 异常
+那魔术方法其实也可以认为是 Python 内置的一些方法, 其实你只是在对它进行**函数重载**. 例如, 你自定义了一个二维向量类, 然后想实现一个向量加法, 那么你可以这么做
+
+```python
+class Vector2D:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __str__(self):
+        return f"({self.x}, {self.y})"
+
+    def __add__(self, other):
+        if isinstance(other, Vector2D):
+            return Vector2D(self.x + other.x, self.y + other.y)
+        else:
+            raise TypeError("Unsupported operand type for +")
+```
+
+这里 `__add__` 实际上就是作为加法运算符的重载. `__str__` 是将对象转换为字符串时自动调用, 有点类似于 `ToString`.
+
+利用魔术方法, 你可以实现很多东西:
+
+* 实现对类属性的封装! 利用 `__getattr__`.
+* 不用 `def` 也能实现一个函数! 利用 `__callable__`.
+* 实现属于自己的一个容器, 例如实现一个双链表之类的! 你需要实现迭代器需要的方法. 例如 `__iter__`.
+
+如果你感兴趣, 可以自行搜索这些话题.
 
 ## 值得学习的模块
 
-collections 库: 能够帮助我们简化许多数据处理的操作.
+* `re` 库: 正则表达式
+* `os` 库: 操作系统接口
+  * 我们推荐大家用 `os` 库作为 shell 脚本的一种替代.(更可读, 更好写)
+
+`collections` 库: 能够帮助我们简化许多数据处理的操作.
 
 一些操作例子:&#x20;
 
-* `defaultdict` 对缺省的字典键初始化
+* `defaultdict` 对缺省的字典键初始化. 这个应该你在课堂上学过.
 * `Counter` 计数特化的字典
 * `deque` 双向队列
 * `ChainMap` 多重查询
+
+`Pathlib` 库: 面向对象的文件系统路径
+
+* 跨平台开发很有用. 不需要你用 `os` 库去判断操作系统型号然后选用到底是 / 还是 \\.
 
 其它待补充
 
@@ -342,6 +404,8 @@ collections 库: 能够帮助我们简化许多数据处理的操作.
 * [cs-61a](https://cs61a.org/): UCB 非常优质的公开课程, 富含精心准备的教案和代码练习. 这门课用 Python 讲 SICP 这本书, 不仅能让你上手 Python 编程, 还带你真正进入 CS 的世界.
 * [清华大学2023科协暑培 Python 基础](https://www.bilibili.com/video/BV1kF411Q71M/): b 站上刷到的, 讲得很细致, 同时也给出了[在线文档](https://docs.net9.org/courses/), 感觉和我们讲的东西很贴近, 大家也可以去观摩学习一下.
 * Clean Code: A Handbook of Agile Software Craftsmanship: 有关 OOP 很好的一本参考书.
-* 我想找些和 Python 相关的书籍! [这个网站](https://pythonbooks.org/)推荐了适合各个阶段学习的书籍.
+* 一本名字跟他很接近的书: [Clean Python](https://zhaochenyang20.github.io/pdf/clean%20python.pdf)
+  * 我想找些和 Python 相关的书籍! [这个网站](https://pythonbooks.org/)推荐了适合各个阶段学习的书籍.
 * [怎样理解 Python 里的装饰器?](https://www.zhihu.com/question/26930016)&#x20;
+* [装饰器的超详细教学](https://www.bilibili.com/video/BV1Gu411Q7JV/): 同时推荐这个UP主, 资深 Python 用户.
 

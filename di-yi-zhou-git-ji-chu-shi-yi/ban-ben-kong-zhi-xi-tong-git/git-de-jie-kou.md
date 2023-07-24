@@ -1,10 +1,14 @@
 # Git 的接口
 
-为了避免重复造轮, 我们不会一五一十的解释下面的这些命令行指令. 我们推荐你阅读 [Pro Git](https://git-scm.com/book/zh/v2/Git-%E5%9F%BA%E7%A1%80-%E8%8E%B7%E5%8F%96-Git-%E4%BB%93%E5%BA%93) 文档来学习这些 Git 的基础操作. 另外文档工具例如 tldr 会很有用.
+为了避免重复造轮, 我们不会一五一十的解释下面的这些命令行指令. 我们推荐你阅读 [Pro Git](https://git-scm.com/book/zh/v2/Git-%E5%9F%BA%E7%A1%80-%E8%8E%B7%E5%8F%96-Git-%E4%BB%93%E5%BA%93) 文档来学习这些 Git 的基础操作. 另外文档工具例如 tldr, 或者 `git help` 会很有用.
 
-此外, 我们推荐你去了解 IDE 里集成的 Git 使用, 而不是照着命令行敲(通常来说这是低效的). 当然, 作为学习工作原理, 我们强烈推荐你去了解这一部分.
+此外, 我们推荐你去了解 IDE 里集成的 Git 使用, 而不是照着命令行敲(通常来说这是低效的). 当然, 作为学习工作原理, 我们强烈推荐你去了解CLI.
 
 ## 基础操作
+
+{% hint style="info" %}
+如果你还在思考 Commit 是个什么东西, 你可以回到上一个章节再去回顾下知识点.
+{% endhint %}
 
 获取一个 Git 仓库:
 
@@ -13,21 +17,27 @@
 
 一些基础操作:
 
+* `git status`: 查看当前状态
 * `git add`: 将文件添加到暂存区
+  * 从工作区(worktree)添加到暂存区(index/staged)
 * `git commit -m "<message>"`: 创建一次提交
-  * 我好犹豫怎么写提交信息啊! 看看这个[文章](https://cbea.ms/git-commit/).
-  * 写好提交信息很重要.
+  * 暂存区添加到版本库. 这时候会更新 HEAD.
+  * 我好犹豫怎么写提交信息啊! 看看这个[文章](https://cbea.ms/git-commit/). 写好提交信息很重要.
 * `git log:` 显示历史信息
 * `git log --all --graph --decorate`: 可视化
 * `git diff <filename>`: 显示文件与暂存区的差异
 * `git diff <revision> <filename>`: 显示某个文件两个版本之间的差异
 * `git checkout <revision>`: 更新HEAD和目前的分支
 
+{% hint style="info" %}
+`git checkout` 自 Git 2.23 起不建议使用(deprecated). 改用 `git switch` 来切换分支, 以及分离 HEAD.
+{% endhint %}
+
 ## 分支操作
 
 分支操作是 Git 的灵魂之一. 我们在原理篇介绍了分支其实就是一个指向 commit 的指针. 按照这个思路你会更好理解这个概念.
 
-我们推荐你学习 [Learn Git Branching](https://learngitbranching.js.org/) 这样一个交互式网站去学习 Git.
+我们强烈推荐你学习 [Learn Git Branching](https://learngitbranching.js.org/) 这样一个交互式网站去学习分支操作!
 
 * `git branch`: 显示分支
 * `git branch <name>`: 创建分支
@@ -65,8 +75,25 @@
 * `git stash`: 暂时移除工作目录下的修改内容
 * `git bisect`: 通过二分查找搜索历史记录
 * `.gitignore`: [指定](https://git-scm.com/docs/gitignore)故意不追踪的文件
+* [提交签名](https://docs.github.com/zh/authentication/managing-commit-signature-verification/about-commit-signature-verification): 给你的 Git 提交签名, 这样你的提交就会有一个 Verified 字样. 曾经有人用 linus 的名义发起 [commit](https://github.com/torvalds/linux/tree/8bcab0346d4fcf21b97046eb44db8cf37ddd6da0) 整蛊.
+
+## 合格的 Git 仓库
+
+原则: **要让傻瓜都会按照你的指示正常跑起你的代码.**
+
+包含以下内容:
+
+* 合适的项目名称
+* 项目简介
+* README.md
+* .gitignore
+* 项目源码
+* 项目依赖库的安装方式
+* 项目的使用方法
 
 ## 演示: IDE 里的使用
+
+这一部分其实最为重要: 就算你不懂原理, 但你也可以依葫芦画瓢地去使用 Git.
 
 我们给出相关 IDE 的文档: 如果有你没见到的, 记得 STFW.
 

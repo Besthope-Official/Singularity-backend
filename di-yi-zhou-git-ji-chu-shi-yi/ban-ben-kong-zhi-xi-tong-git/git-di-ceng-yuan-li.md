@@ -375,4 +375,4 @@ demo 1.0 version released
 
 [MIT CS教育缺失的一课: 版本控制(Git)](https://missing-semester-cn.github.io/2020/version-control/): 整个 Missing-semester 课程都推荐大家学习, 非常好的一门课, 学习到很多好用的工具, 除了拓宽视野更能帮助你在未来的职业生涯中节省时间.
 
-[Git crash course](https://www.youtube.com/watch?v=RGOj5yH7evk\&list=PLICH95IlQ1dRtYhrkmiqubOB6TGoZKrS5\&index=38): 看完就会用 Git.
+[Git crash course](https://www.youtube.com/watch?v=RGOj5yH7evk\&list=PLICH95IlQ1dRtYhrkmiqubOB6TGoZKrS5\&index=38): 看完就会用 Git. 需要科学工具.

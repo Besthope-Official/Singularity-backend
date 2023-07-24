@@ -7,13 +7,14 @@ description: ^_^
 ## Git
 
 1. 试着理解并总结 Git 的底层原理. 我们推荐你去阅读 [Pro Git](https://git-scm.com/book/zh/v2/Git-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E5%BA%95%E5%B1%82%E5%91%BD%E4%BB%A4%E4%B8%8E%E4%B8%8A%E5%B1%82%E5%91%BD%E4%BB%A4) 关于这一部分的讲解.
-2. 创建一个属于自己的 Git 仓库! 然后在你的机子上试着执行我们文档里给出的指令. 看看会发生什么! 这也是熟悉命令行工具的一环.
+2. 创建一个属于自己的 Git 仓库! 然后在你的机子上试着执行我们文档里给出的指令. 看看会发生什么! 这也是熟悉命令行工具的一环. 同样, 我们推荐你阅读官方文档去了解这些命令背后的原理.
 3. 熟悉 Git 在 IDE 里的使用方式. 完成各大 IDE 文档给出的教程内容. 在接下来的课程中, 我们都会改用 IDE 进行 Git 操作.
 4. 完成 [Learn Git Branching](https://learngitbranching.js.org/) 的全部练习. 分支操作很有用!
 5. 这里是本次[训练营文档的仓库](https://github.com/Besthope-Official/Singularity-backend). 我们在这个仓库里藏了一个小彩蛋, 看看你能通过什么方式找到它! (其实方法很简单) 如果找到了, 你可以 fork 一下然后开一个 Pull Request 向我们提交(如果你发现文档里有错误, 可以用相同的方式提交).
 6. 看看是哪位部长创建了 `zuo-ye.md` :)
 7. 创建一个 `git log --all --graph --decorate --oneline` 的别名 `git graph`. 你可以在 `~/.gitconfig` 去配置(不要去修改 `~/.bash_profile`).
-8. 使用 Git 的一个常见错误是提交不应该由 Git 管理的大文件, 例如视频文件, 或者把敏感信息(例如数据库的密码)提交给了 Git. 先前我们提到 Git 会把一切对象存储到仓库内, 撤回也只是新建一个抹除文件后的快照, 这些内容仍然存储在历史记录内. 试着把某一个文件彻底地从历史记录中删去. (参考[这篇文章](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository))
+8. 使用 Git 的一个常见错误是提交不应该由 Git 管理的大文件, 例如视频文件(但实际上有一个 [Git Large File](https://git-lfs.com/) 的东西), 或者把敏感信息(例如数据库的密码)提交给了 Git. 先前我们提到 Git 会把一切对象存储到仓库内, 撤回也只是新建一个抹除文件后的快照, 这些内容仍然存储在历史记录内. 试着把某一个文件彻底地从历史记录中删去. (参考[这篇文章](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository))
+9. 这是 T 大暑期培训 Git 的[讲义](https://summer23.net9.org/pdfs/linux-handout.pdf), 里面讲到了很多命令的细节. 同时涉及的作业也很有意思, 采用的是 CTF(夺旗), 如果你感兴趣可以用 Docker pull 他们的镜像然后尝试完成.
 
 ## Python
 
@@ -23,12 +24,17 @@ description: ^_^
 
 * 设计一个基类 Object, 然后它的子类 Blob, Tree, Commit.
 * 你只需要设计 Template. 换句话说不需要你实现, 但你需要把接口设计出来.
-* 学习下 `argparse` 或者 `click` 这个库. 试着能够在终端里像执行 git 一样执行你的应用程序. (创建一个 `mygit` 文件, 调用 `mygit_lib.py` 然后将它添加到你的 PATH)你只需要实现一个打印功能, 例如下面的演示
+* 学习下 `argparse` 或者 `click` 这个库. 试着能够在终端里像执行 git 一样执行你的应用程序. (创建一个 `mygit` 文件, 调用 `mygit_lib.py` 然后将它添加到你的 PATH, 可以去了解下 shebang)
+* 你只需要实现一个打印功能, 例如下面的演示
 
 ```bash
 $ mygit init
 This is mygit init
 ```
+
+{% hint style="info" %}
+构建命令行接口你也可以 google 开发的 [python-fire](https://github.com/google/python-fire) 库. 但我们推荐你先学习传统的构建方式.
+{% endhint %}
 
 * 如果你愿意进一步探索, 可以去实现一些简单的 Git 功能. 参考我们对 Git 底层原理的讲解, 以及 [wyag](https://wyag.thb.lt/) 的项目.
 
