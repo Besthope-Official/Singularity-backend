@@ -65,8 +65,9 @@
 * Git: 重要的版本控制系统. 至少在任何CS开发相关的工作中你都会用上它.
   * 在你的开发系统上(例如 WSL 上)[安装](https://git-scm.com/book/zh/v2/%E8%B5%B7%E6%AD%A5-%E5%AE%89%E8%A3%85-Git)好一个 Git, 然后完成 Git 的初次[配置](https://git-scm.com/book/zh/v2/%E8%B5%B7%E6%AD%A5-%E5%88%9D%E6%AC%A1%E8%BF%90%E8%A1%8C-Git-%E5%89%8D%E7%9A%84%E9%85%8D%E7%BD%AE). 下一周我们会对 git 进行一个较为详尽的介绍 (buttom up)!
 * 安装好 ssh server: 在后面我们可能会讲到连接服务器的相关操作.
-* 安装好 [Postman](https://www.postman.com/): 一个很强大的测试工具
+* [安装](https://zhuanlan.zhihu.com/p/605649220)好 [Postman](https://www.postman.com/): 一个很强大的测试工具
   * 虽然说 curl 或者浏览器模拟请求也是可以的, 但 Postman 确实值得我们学习.
+* 安装好 [Docker](https://zhuanlan.zhihu.com/p/82269806): 它是一个很强大的容器化工具, 轻量, 且方便构建.
 
 ### 选择一个好的 IDE
 
