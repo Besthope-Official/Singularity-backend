@@ -105,6 +105,24 @@ Jupyter Notebooks 很强大, 但它不适合作为我们完整项目的开发环
 
 本次训练营的许多内容都将在WSL Ubuntu 22.04.6 LTS上展示.
 
+{% hint style="info" %}
+Q: 为什么文档里的这段代码在我的电脑上报错啊?
+
+```powershell
+PC C:\> export FLASK_APP=hello.py
+export : The term 'export' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a p
+ath was included, verify that the path is correct and try again.
+At line:1 char:1
+...
+```
+
+A: 我们是 Unix 系统下的工作流, 你可能需要一个 WSL 或者买一个 Mac. (这并不是因为我们很残忍, 但这确实更有利于大家去学习)
+{% endhint %}
+
+
+
+
+
 <figure><img src="../.gitbook/assets/R-C.jpg" alt=""><figcaption><p>Yes, it's me</p></figcaption></figure>
 
 ### 熟悉CLI相关工具
