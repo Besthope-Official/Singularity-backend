@@ -23,6 +23,19 @@
 * `git commit -m "<message>"`: 创建一次提交
   * 暂存区添加到版本库. 这时候会更新 HEAD.
   * 我好犹豫怎么写提交信息啊! 看看这个[文章](https://cbea.ms/git-commit/). 写好提交信息很重要.
+
+{% hint style="info" %}
+这是一个经典笑话: 如何生成一个随机字符串
+
+让新手退出 VIM
+
+```bash
+git add .
+git commit
+^C^C^D^D^X^X^X^Z^Z^Zexit.exitexit()^C^C^C^C^C^C^C^C^C^C^C^C^C^C^C^C^C^C^C^C^C^C
+```
+{% endhint %}
+
 * `git log:` 显示历史信息
 * `git log --all --graph --decorate`: 可视化
 * `git diff <filename>`: 显示文件与暂存区的差异

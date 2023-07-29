@@ -84,7 +84,7 @@ def index():
 
 `index` 这个名字你应该不陌生. 除了下标的含义, 它还代表类似于主页的含义. 它处理_入站请求_, 然后执行 `index` 函数. 它的返回值称为**响应**(response), 可以是包含 HTML 元素的简单字符串.
 
-URL是可变的, `app.route` 它可以 parse 一些特定的句法, 例如
+URL是可变的, `app.route` 它可以 parse 一些特定的句法(也叫做 [converter](https://flask.palletsprojects.com/en/2.3.x/api/#url-route-registrations)), 例如
 
 ```python
 @app.route('/user/<name>')
@@ -94,7 +94,7 @@ def user(name):
 
 Flask 会把这个动态部分作为函数参数传入函数. 现在, 访问 `/user/besthope`, 就会输出我们的预期结果.
 
-这个动态部分支持强调类型. 例如, `<int:id>` 就声明了它只匹配动态片段 `id` 为整数的情况(注意这和type hint 的语法不太一样).
+这个动态部分支持强调类型(默认是 `string`). 例如, `<int:id>` 就声明了它只匹配动态片段 `id` 为整数的情况(注意这和 type hint 的语法不太一样).
 
 ### 命令行选项
 
@@ -124,7 +124,7 @@ if __name__ == '__main__':
 
 客户端通过调试器能请求执行远程代码，因此可能导致生产服务器遭到攻击。作为一种简单的保护措施，启动调试模式时可以要求输入PIN 码，执行 `flask run` 命令时会打印在控制台中。
 
-我们推荐你使用 `config` 文件去配置这些选项. 不过到目前, 你只需要了解这些部分即可.
+我们推荐你使用 `config` 文件或者利用 `dotenv` 去配置这些选项. 不过到目前, 你只需要了解这些部分即可.
 {% endhint %}
 
 你可以试试 `flask help`, 里面有更多关于 flask 命令的相关选项.
@@ -162,7 +162,141 @@ def index():
     return render_template('index.html')
 ```
 
+## 示例: Glimpse to RESTful APIs
+
+### REST 架构
+
+在本次的示例中, 我们会演示怎么去编写符合 [REST](http://ruanyifeng.com/blog/2014/05/restful\_api.html)(**RE**presentational **S**tate **T**ransfer) 原则的接口.
+
+REST _对信息的核心抽象_就是**资源**(Resources), 通常以 [URI](https://en.wikipedia.org/wiki/Uniform\_Resource\_Identifier)(统一资源定位符) 的形式表现. 这里的资源可以是文本, 图片, 或者_任何能被命名的信息_. 换句话说, 如果某一信息能被超链接导航到, 那它就符合资源的定义. 要访问某一"资源", 访问它的 URI 即可. URI 就是这个"资源"独一无二的**标识符**!
+
+{% hint style="info" %}
+"资源"是对信息的_抽象_: 它代表的是**一组**相关的实体, 而非一个单独的实体. 具体的实体会发生变化, 但"资源"表示实体的结构和行为是不变的.
+{% endhint %}
+
+例如 Github 对用户信息封装了一个接口
+
+```
+https://api.github.com/users/besthope-official
+```
+
+"资源"具体表现的形式, 就称作它的"**表现层**"(Representation).
+
+例如, 文本可以用 txt 格式表现, 也可以用 JSON, xml 格式, 甚至二进制格式表现; 图片可以用 jpg 格式表现, 也可以用 png 格式表现.
+
+上面的 URI 访问的结果就是一个 JSON 表示:
+
+```
+{
+  "login": "Besthope-Official",
+  "id": 29171517,
+  "node_id": "MDQ6VXNlcjI5MTcxNTE3",
+  ...
+}
+```
+
+想要获取同一资源另外的表现层, 例如上面的XML表示, 你需要为这个请求附带额外信息, 这个额外信息就叫做标头 (**header**). 在这个例子中, 你需要设置下 [Content-Type](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Type) 这个header.
+
+访问一个网站, 就代表了**客户端和服务器的一个互动过程**. 在这个过程中, 必然涉及数据和状态的改变.
+
+互联网通信协议[HTTP 协议](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Overview#http\_%E6%98%AF%E6%97%A0%E7%8A%B6%E6%80%81%EF%BC%8C%E6%9C%89%E4%BC%9A%E8%AF%9D%E7%9A%84), 是一个_无状态协议_. 所有的状态都保存在服务器端, 如果客户端想要操作服务器, **必须通过某种途径**, 使得服务器端发生"**状态转移**"(State Transfer). 而这种状态转移是建立在表现层之上的. 所以, 你现在就能明白 REST 到底指的是个啥.
+
+至于客户端用到的手段, 只能是[HTTP 的请求方法](https://developer.mozilla.org/zh-CN/docs/web/http/methods)(request methods). 下面这五种方法对应的 **CRUD(增删改查)** 操作:
+
+| 请求方法   | 效果                 |
+| ------ | ------------------ |
+| GET    | 读取（Read）           |
+| POST   | 新建（Create）         |
+| PUT    | 更新（Update）         |
+| PATCH  | 更新（Update），通常是部分更新 |
+| DELETE | 删除（Delete）         |
+
+根据 HTTP 协议, 请求方法由客户端提出, 由服务器决定是否执行或拒绝. 例如, 你发起了一个 `GET` 请求, 想获取 `/clients` 下的资源. 但这个文件获取需要有权限, 服务器就可以有如下的执行方式:
+
+* `404 Not found`: 这个状态码表示文件不存在. 当然是服务器装的.
+* `403 Forbidden`: 这个文件拒绝访问.
+* `405 Method Not Allowed`: 然后用 `Allow` 头告诉你可以用 `HEAD` 方法获取文件的元信息.
+
+这样, 你就不难理解: **资源都是名词**. 例如, 下面的这个 URI 就是错误的
+
+```
+http://api.example.com/posts/delete/233/
+```
+
+要实现删除操作, 你需要用到上面介绍的请求方法, 用_动词+名词_的方式去实现这个操作, 例如
+
+```
+DELETE https://api.github.com/gists/gists/1
+```
+
+返回的结果也不再是资源, 而是我们上面提到的返回码和原因短语. 通常来说, 我们会在后端文档中指明各个返回码的含义, 例如上面这个[例子](https://docs.github.com/en/rest/gists/gists?apiVersion=2022-11-28#delete-a-gist--status-codes) 204 代表 No Content:
+
+```
+Status: 204
+```
+
+讲了这么多有的没的, 那采用 RESTful 架构到底有什么用. 为什么, 那就是大家都用这一套. 正所谓某个商品销量高, 评价又好, 必然有它的原因. 它好理解, 跨平台, 支持缓存, 可拓展......
+
+不过说到底, 它也_只是_**一种架构. 一种准则.** 你完全可以不按照这套方式去设计接口(例如去学习RPC等其它架构方式), 完全的放飞自我, 只不过这样, 你的 URL 设计会变得一团糟:
+
+* URI 又臭又长: ~~`/authors/12/categories/2`~~
+  * 用字符串查询去优化: `/authors/12?categories=2`
+* URI 的命名: ~~`order/create-order`~~
+  * 不要用单数名词去命名资源集合, 也不要出现动宾结构的出现.
+* .....
+
+### Coding Time
+
+Flask 是编写 RESTful APIs 的一个很好的选择, 不仅因为是_它好写_(Python 的优势), 同时, Flask 本身对 REST 的请求和调度支持很好. 我们选 Flask 作为 Python 后端开发的框架也正是基于这一点.
+
+我们用一个简单的增删改查的例子来体现这一点: 下载我们的[示例代码](https://github.com/Besthope-Official/Singularity-backend/raw/main/demo/demo\_crud.zip), 它包含了一个简单的框架和存储的数据.
+
+{% hint style="info" %}
+如果你是 WSL, 你可以通过 Windows Explorer 直接将文件复制到你想要的目录下. 不过, 为了熟悉 Unix 工作流, 我们推荐你使用 `wget` 将文件下载到当前目录下
+
+`wget https://github.com/Besthope-Official/Singularity-backend/raw/main/demo/demo_crud.zip`
+
+然后利用 unzip 指令进行解压:
+
+```
+unzip demo_curd.zip
+```
+{% endhint %}
+
+我们的数据保存在 `db.py`, 它是一个由字典构成的列表, 每一个字典有 4 个字段, id, name, group, category, 作为键存在.
+
+我们用 `get_author()` 作为示例:&#x20;
+
+* 它返回"数据库"里指定 group 和指定 category 的作者信息.
+* 请求 URL 是: `http://127.0.0.1:5000/authors/<group_id>`, 请求方式为 GET.
+* 它需要一个请求 Query 参数 categories, 例如 `/authors/1?categories=1`
+* 你可以 check 下 Flask 文档有关 [request](https://flask.palletsprojects.com/en/2.3.x/api/#incoming-request-data) 和 [jsonify](https://flask.palletsprojects.com/en/2.1.x/api/#flask.json.jsonify) 的相关说明.
+
+```python
+@app.route('/authors/<int:group_id>', methods=['GET'])
+def get_author(group_id):
+    '''
+    Return the authors that are in the same group and category.
+    '''
+    category = request.args.get('categories', None)
+    
+    result_authors = [author for author in authors if author['group']
+                      == group_id and author['category'] == int(category)]
+    
+    if not result_authors:
+        return jsonify({'message' : 'No authors to be found'}), 404
+        
+    return jsonify(result_authors)
+```
+
+用 curl 去获取请求:
+
+```
+curl -X GET http://127.0.0.1:5000/authors/1?categories=1
+```
+
 ## 学习资料
 
 * Flask Web开发: 基于Python的Web应用开发实战. 很好的 Flask 入门图书.
 * [Hello Flask](https://tutorial.helloflask.com/hello/): 一个 Flask 入门的教程.
+* [Awesome Flask](https://github.com/humiaozuzu/awesome-flask#resources): 一个收录了许多优秀 Flask 插件和学习资源的开源项目.
