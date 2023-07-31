@@ -67,6 +67,39 @@ app = Flask(__name__)
 
 这个类的构造函数需要传入一个_应用主模块的名称_.
 
+你可能会好奇创建应用实例是干什么的. 你可以做下面的一个小实验:
+
+```python
+>>> from flask import Flask, current_app, request
+>>> app = Flask('hello')
+>>> app
+>>> current_app
+>>> with app.app_context():
+    print(repr(current_app))
+>>> with app.test_request_context():
+    print(repr(request))
+```
+
+看看 Flask 的核心代码:
+
+```python
+def wsgi_app(self, environ: dict, start_response: t.Callable) -> t.Any:
+        ctx = self.request_context(environ)
+        error: t.Optional[BaseException] = None
+        try:
+            try:
+                ctx.push()
+                response = self.full_dispatch_request()
+            except Exception as e:
+                error = e
+                response = self.handle_exception(e)
+            except:  # noqa: B001
+                error = sys.exc_info()[1]
+                raise
+            return response(environ, start_response)
+...
+```
+
 我们之后会讲到通过蓝图构建应用实例. 不过对于小型项目来说, 这样做就够了.
 
 ### 路由和视图函数
@@ -82,7 +115,7 @@ def index():
 <strong>    return '&#x3C;h1>Hello World!&#x3C;/h1>'
 </strong></code></pre>
 
-`index` 这个名字你应该不陌生. 除了下标的含义, 它还代表类似于主页的含义. 它处理_入站请求_, 然后执行 `index` 函数. 它的返回值称为**响应**(response), 可以是包含 HTML 元素的简单字符串.
+`index` 这个名字你应该不陌生. 除了下标的含义, 它还代表类似于主页的含义. 它处理入站**请求**(request), 然后执行 `index` 函数. 它的返回值称为**响应**(response), 可以是包含 HTML 元素的简单字符串.
 
 URL是可变的, `app.route` 它可以 parse 一些特定的句法(也叫做 [converter](https://flask.palletsprojects.com/en/2.3.x/api/#url-route-registrations)), 例如
 
@@ -95,6 +128,13 @@ def user(name):
 Flask 会把这个动态部分作为函数参数传入函数. 现在, 访问 `/user/besthope`, 就会输出我们的预期结果.
 
 这个动态部分支持强调类型(默认是 `string`). 例如, `<int:id>` 就声明了它只匹配动态片段 `id` 为整数的情况(注意这和 type hint 的语法不太一样).
+
+我们还可以获取视图函数对应的 URL, 用 `url_for` 即可:
+
+```python
+>>> from flask import url_for
+>>> url_for('index')
+```
 
 ### 命令行选项
 
@@ -247,16 +287,20 @@ Status: 204
 
 ### Coding Time
 
-Flask 是编写 RESTful APIs 的一个很好的选择, 不仅因为是_它好写_(Python 的优势), 同时, Flask 本身对 REST 的请求和调度支持很好. 我们选 Flask 作为 Python 后端开发的框架也正是基于这一点.
+Flask 是编写 RESTful APIs 的一个很好的选择, 不仅因为是_它好写_(Python 的优势), 同时, Flask 本身对 REST 的请求和调度支持很好. 从我个人的角度来说, Flask 小而微, 由社区 extensions 驱动, 和 vscode 类似, 非常符合我的审美需求:>
 
 我们用一个简单的增删改查的例子来体现这一点: 下载我们的[示例代码](https://github.com/Besthope-Official/Singularity-backend/raw/main/demo/demo\_crud.zip), 它包含了一个简单的框架和存储的数据.
 
 {% hint style="info" %}
-如果你是 WSL, 你可以通过 Windows Explorer 直接将文件复制到你想要的目录下. 不过, 为了熟悉 Unix 工作流, 我们推荐你使用 `wget` 将文件下载到当前目录下
+在后期的教学以及作业布置, 我们会经常采用类似的方式.
+
+如果你是 WSL, 你可以通过 Windows Explorer 直接将文件复制到你想要的目录下(试试 `explorer.exe .`)
+
+不过, 为了熟悉 Unix 工作流, 我们推荐你使用 `wget` 将文件下载到当前目录下
 
 `wget https://github.com/Besthope-Official/Singularity-backend/raw/main/demo/demo_crud.zip`
 
-然后利用 unzip 指令进行解压:
+然后利用 `unzip` 指令进行解压:
 
 ```
 unzip demo_curd.zip
@@ -270,7 +314,21 @@ unzip demo_curd.zip
 * 它返回"数据库"里指定 group 和指定 category 的作者信息.
 * 请求 URL 是: `http://127.0.0.1:5000/authors/<group_id>`, 请求方式为 GET.
 * 它需要一个请求 Query 参数 categories, 例如 `/authors/1?categories=1`
-* 你可以 check 下 Flask 文档有关 [request](https://flask.palletsprojects.com/en/2.3.x/api/#incoming-request-data) 和 [jsonify](https://flask.palletsprojects.com/en/2.1.x/api/#flask.json.jsonify) 的相关说明.
+
+获取这个请求参数, 我们可以利用 [`request`](https://flask.palletsprojects.com/en/2.3.x/api/#flask.request), 它是一个全局的 Request object, 你只用导入它就可以获取请求(根据上下文). 同时, 它还是线程安全的!
+
+剩下一个问题是, 返回的请求是一段 JSON, 你可能会想, 直接返回一个 `json.dumps` 不就可以了(就和我们上面返回HTML标签一样). 其实你这是隐式创建了一个 Response.
+
+但假如我们想额外返回例如错误码之类的信息, 你可能还要在 JSON 里添加一个错误码的字段.
+
+我们不想让 JSON 的格式变得太复杂, 如果它能作为一个类似 header 的返回, 那会更方便. 很显然我们是没有 `flask.response` 的, 但显式地创建一个 response 也不是什么难事:
+
+```python
+resp = Response(js, status=200, mimetype='application/json')
+return resp
+```
+
+其实我们还有更方便的 `jsonify` 多做了一层封装:
 
 ```python
 @app.route('/authors/<int:group_id>', methods=['GET'])
@@ -284,19 +342,26 @@ def get_author(group_id):
                       == group_id and author['category'] == int(category)]
     
     if not result_authors:
-        return jsonify({'message' : 'No authors to be found'}), 404
+        js = jsonify({'message' : 'No authors to be found'})
+        js.status_code = 404
+    else:
+        js = jsonify(result_authors)
+        js.status_code = 200
         
-    return jsonify(result_authors)
+    return js
 ```
 
-用 curl 去获取请求:
+用 curl 去获取请求(`-i`表示显示headers):
 
-```
-curl -X GET http://127.0.0.1:5000/authors/1?categories=1
+```bash
+curl -i http://127.0.0.1:5000/authors/1?categories=1
 ```
 
 ## 学习资料
 
-* Flask Web开发: 基于Python的Web应用开发实战. 很好的 Flask 入门图书.
-* [Hello Flask](https://tutorial.helloflask.com/hello/): 一个 Flask 入门的教程.
+* _Flask Web开发: 基于Python的Web应用开发实战._ 很好的 Flask 入门图书.
+* [Hello Flask](https://tutorial.helloflask.com/hello/): 一个 Flask 入门的教程. 因为是中文所以比较好上手.
 * [Awesome Flask](https://github.com/humiaozuzu/awesome-flask#resources): 一个收录了许多优秀 Flask 插件和学习资源的开源项目.
+* [Flask-restful](https://github.com/flask-restful/flask-restful): 快速上手搭建 RESTful 风格的接口插件.
+* [Implementing a RESTful Web API with Python & Flask](http://blog.luisrei.com/articles/flaskrest.html): 很不错的一篇文章.
+* [In Flask we trust](https://speakerdeck.com/playpauseandstop/in-flask-we-trust): 如果你想要更仔细了解 Flask 的底层机制, 推荐你阅读这个 slides.
