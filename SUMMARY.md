@@ -22,3 +22,4 @@
 ## 第二周 框架初识 <a href="#week2" id="week2"></a>
 
 * [Flask 入门](week2/flask-intro.md)
+* [springboot 入门](week2/springboot-intro.md)
