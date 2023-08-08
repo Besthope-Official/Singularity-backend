@@ -24,17 +24,16 @@
 * [Flask 入门](week2/flask-intro.md)
 * [springboot 入门](week2/springboot-intro.md)
 
-<<<<<<< HEAD
-## 第三周 框架进阶 <a href="#week3" id="week3"></a>
-=======
 ## 第三周 数据库交互 <a href="#week3" id="week3"></a>
 
 * [MySQL速览](week3/mysql-intro.md)
 * [Flask SQLAlchemy](week3/flask-sqlalchemy.md)
+* [Springboot JPA](week3/springboot-sql.md)
 
 ## 重要：项目布置 <a href="#project" id="project"></a>
 
 * [Python 项目](project/python.md)
+* [java 项目](project/java.md)
 
 ## 第四周 框架进阶 <a href="#week4" id="week4"></a>
 
