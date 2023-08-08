@@ -28,10 +28,12 @@
 
 * [MySQL速览](week3/mysql-intro.md)
 * [Flask SQLAlchemy](week3/flask-sqlalchemy.md)
+* [Springboot JPA](week3/springboot-sql.md)
 
 ## 重要：项目布置 <a href="#project" id="project"></a>
 
 * [Python 项目](project/python.md)
+* [java 项目](project/java.md)
 
 ## 第四周 框架进阶 <a href="#week4" id="week4"></a>
 
@@ -41,3 +43,4 @@
 
 * [Linux 操作](week5/linux.md)
 * [服务器部署](week5/deploy.md)
+>>>>>>> ab45128e851296382daedfb3d7aaa9a8a83e773b
