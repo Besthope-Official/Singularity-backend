@@ -279,7 +279,15 @@ db.relationship() 中的 backref 参数向 User 模型中添加一个 role 属�
 
 ## 拓展: sqlacodegen
 
-给各位一段 Snippet, 大家可以按照自身需求修改, 不用自己去写 Model 类
+给各位一段 Snippet, 大家可以按照自身需求修改, 不用自己去写 Model 类.
+
+推荐 [flask-sqlacodegen](https://github.com/ksindi/flask-sqlacodegen), 安装通过 Git 安装比较好(`pip` 安装不知道为什么在我这里会出现兼容问题)
+
+```bash
+git clone https://github.com/ksindi/flask-sqlacodegen.git
+cd flask-sqlacodegen/
+python setup.py install
+```
 
 ```python
 import os
@@ -287,22 +295,31 @@ from config import Config
 
 
 def gen_signal(table_name, mysql_url):
-    args_str = "flask-sqlacodegen %s --tables %s --outfile APIs/%s.py" % (
+    args_str = "flask-sqlacodegen %s --flask --tables %s --outfile %s.py" % (
         mysql_url, table_name, table_name)
-    os.system(args_str)
+    try:
+        os.system(args_str)
+    except Exception as e:
+        print(f"Error generating signal for table {table_name}: {e}")
 
 
 def gen_all(name, mysql_url):
-    args_str = "flask-sqlacodegen %s --outfile APIs/%s.py" % (
+    args_str = "flask-sqlacodegen %s --flask --outfile %s.py " % (
         mysql_url, name)
-    os.system(args_str)
+    try:
+        os.system(args_str)
+    except Exception as e:
+        print(f"Error generating all for {name}: {e}")
 
 
 if __name__ == '__main__':
     url = Config().SQLALCHEMY_DATABASE_URI
-    gen_all('models', url)
-    # gen_signal('models_all', url)
-    # gen_signal('users', url)
-    print('Models generate complete.')
+    try:
+        gen_all('models', url)
+        # gen_signal('models_all', url)
+        # gen_signal('users', url)
+        print('Models generate complete.')
+    except Exception as e:
+        print(f'Error occurs in main: {e}')
 
 ```
