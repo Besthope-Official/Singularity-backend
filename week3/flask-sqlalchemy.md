@@ -151,6 +151,40 @@ class User(db.Model):
 
 <table><thead><tr><th>类型名</th><th>Python 类型</th><th>说明</th><th data-hidden></th></tr></thead><tbody><tr><td>BigInteger</td><td>int 或 long</td><td>不限制精度的整数</td><td></td></tr><tr><td>Float</td><td>float</td><td>浮点数</td><td></td></tr><tr><td>Numeric</td><td>decimal.Decimal</td><td>定点数</td><td></td></tr><tr><td>String</td><td>str</td><td>变长字符串</td><td></td></tr><tr><td>Text</td><td>str</td><td>变长字符串，对较长或不限长度的字符串做了优化</td><td></td></tr><tr><td>Unicode</td><td>unicode</td><td>变长 Unicode 字符串</td><td></td></tr><tr><td>UnicodeText</td><td>unicode</td><td>变长 Unicode 字符串，对较长或不限长度的字符串做了优化</td><td></td></tr><tr><td>Boolean</td><td>bool</td><td>布尔值</td><td></td></tr><tr><td>Date</td><td>datetime.date</td><td>日期</td><td></td></tr><tr><td>Time</td><td>datetime.time</td><td>时间</td><td></td></tr><tr><td>DateTime</td><td>datetime.datetime</td><td>日期和时间</td><td></td></tr><tr><td>Interval</td><td>datetime.timedelta</td><td>时间间隔</td><td></td></tr><tr><td>Enum</td><td>str</td><td>一组字符串</td><td></td></tr><tr><td>PickleType</td><td>任何 Python 对象</td><td>自动使用 Pickle 序列化</td><td></td></tr><tr><td>LargeBinary</td><td>str</td><td>二进制 blob</td><td></td></tr></tbody></table>
 
+你可以试试 flask-sqlacodegen 这个插件, 就省去了手写模型类的麻烦.
+
+很多情况下, 在编写 RESTful 接口时, 我们希望返回一个 JSON 格式的数据, 那么, 在模型类里, 我们可以定义一个 `to_json` 方法(这也称为**序列化**):
+
+```python
+class Post(db.Model):
+    __tablename__ = 'posts'
+
+    id = db.Column(db.Integer, primary_key=True, info='主键')
+    title = db.Column(db.String(255))
+    create_time = db.Column(db.DateTime, info='创建时间')
+    image = db.Column(db.String(255))
+    content = db.Column(db.Text)
+    
+    def to_json(self):
+        json_post = {
+            'id' : self.id,
+            'title' : self.title,
+            'created_time' : self.create_time,
+            'image' : self.image,
+            'content' : self.content
+        }
+        return json_post
+```
+
+这么写的好处是: 在视图函数里返回就可以用一个简洁的列表推导式
+
+```python
+@api.route('posts')
+def get_posts():
+    posts = Post.query.all()
+    return jsonify({'Posts' : [post.to_json() for post in posts]})
+```
+
 ### 数据库操作
 
 {% hint style="info" %}
@@ -217,18 +251,6 @@ class User(db.Model):
 | `get_or_404()`   | 返回指定主键对应的行，如果没找到指定的主键，则返回 404 错误响应 |
 | `count()`        | 返回查询结果的数量                          |
 | `paginate()`     | 返回一个 `Paginate` 对象，包含指定范围内的结果      |
-
-上面的例子, 用 ORM 就可以这么写
-
-```python
-from flask import jsonify
-
-# views
-@app.route('/')
-def index():
-    users = User.query.all()
-    return jsonify([user.username for user in users])
-```
 
 ## 关系
 

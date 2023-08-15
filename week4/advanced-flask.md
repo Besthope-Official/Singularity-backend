@@ -5,19 +5,15 @@
 ```bash
 $ tree -P '*.py' --prune -I 'flask-sqlacodegen|venv'
 .
-├── app.py
-├── auth.py
+├── app
+│   ├── api
+│   │   ├── __init__.py
+│   │   └── posts.py
+│   └── __init__.py
 ├── config.py
-├── generate_model.py
 ├── models.py
-└── views
-    ├── api
-    │   ├── authentication.py
-    │   ├── __init__.py
-    │   ├── posts.py
-    │   ├── subvues.py
-    │   └── users.py
-    └── __init__.py
+├── run.py
+└── test.py
 ```
 
 ## 配置选项
@@ -34,6 +30,10 @@ $ tree -P '*.py' --prune -I 'flask-sqlacodegen|venv'
   * 或者更好, 对部分字段做一个空值检查或者添加一个默认值 `or 'default'`
 
 你可以使用 [dotenv](https://github.com/theskumar/python-dotenv), 它可以将 `.env` 文件里的键值对当成系统变量来用. 具体使用方式可以参考文档.
+
+```bash
+pip install python-dotenv
+```
 
 {% hint style="danger" %}
 千万不要把密码或其他机密信息写在纳入版本控制的配置文件中! `.gitignore` 有大用.
@@ -110,14 +110,12 @@ config 字典中注册了不同的配置环境. 怎么让应用加载不同的�
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from config import config
-
-db = SQLAlchemy()
+from models import db
 
 def create_app(config_name=config['default']):
     app = Flask(__name__)
     
     app.config.from_object(config_name)
-    config[config_name].init_app(app)
 
     db.init_app(app)
     # 添加路由和自定义的错误页面
@@ -138,7 +136,7 @@ def create_app(config_name=config['default']):
 
 Flask 使用**蓝图** (blueprint) 提供了更好的解决方法. 蓝图和应用类似, 也可以定义路由和错误处理程序. 不同的是, 在蓝本中定义的路由和错误处理程序处于休眠状态, 直到蓝本注册到应用上之后, 它们才真正成为应用的一部分.
 
-与应用一样, 蓝图可以在单个文件中定义, 也可使用更结构化的方式在包中的多个模块中创建. 为了方便调整, 我们在 views 文件夹下新建一个 `__init__.py`.
+与应用一样, 蓝图可以在单个文件中定义, 也可使用更结构化的方式在包中的多个模块中创建. 为了方便调整, 我们在 api 文件夹下新建一个 `__init__.py`.
 
 {% hint style="info" %}
 在 Python 的工程项目中, Python 会把含有 \_\_init\_\_.py 的文件夹作为一个模块(Module).
@@ -173,11 +171,12 @@ def user_username(user_name: str) -> str:
 记得在创建应用的工厂函数里加上使用蓝图
 
 ```python
+from .api import api
+
 def create_app(config_name=config['default']):
     app = Flask(__name__)
     
     app.config.from_object(config_name)
-    config[config_name].init_app(app)
     # blueprints here
     app.register_blueprint(api)
 
@@ -190,12 +189,14 @@ def create_app(config_name=config['default']):
 
 ```python
 from flask import Flask
+# 如果需要 sqlalchemy 的数据迁移
 from flask_migrate import Migrate
 
-from views import create_app, db
+from app import create_app, db
 from config import config
 
 app = create_app(config['development'])
+# 在这时候初始化
 migrate = Migrate(app, db)
 
 if __name__ == '__main__':
@@ -218,11 +219,117 @@ pip install -r requirements.txt
 pip freeze > requirements.txt
 ```
 
-* 只把要用的输出.
+* 只把要用的输出. **比较推荐**这个.
 
 ```bash
 pip install pipreqs
 pipreqs .
+```
+
+## 测试
+
+* 自动化测试是很重要的一环.
+  * 你也不想每次都打开浏览器输一遍 url 吧? 不想掏出 curl 敲一遍 HTTP 请求吧?
+
+我们用 [unitest](https://docs.python.org/zh-cn/3/library/unittest.html) 这个框架来编写测试代码: 假如你有一个计算器模块
+
+```python
+def add(a, b):
+    return a + b
+
+def subtract(a, b):
+    return a - b
+```
+
+```python
+import unittest
+from calculator import add, subtract
+
+class TestMathFunctions(unittest.TestCase):
+
+    def test_add(self):
+        self.assertEqual(add(3, 5), 8)
+        self.assertEqual(add(-1, 1), 0)
+        self.assertEqual(add(0, 0), 0)
+
+    def test_subtract(self):
+        self.assertEqual(subtract(10, 3), 7)
+        self.assertEqual(subtract(5, 5), 0)
+        self.assertEqual(subtract(0, 10), -10)
+
+if __name__ == '__main__':
+    unittest.main()
+
+```
+
+一些常见的断言方法, 由名字也能知道它们是干啥的.
+
+* assertEqual(a, b)
+* assertNotEqual(a, b)
+* assertTrue(x)
+* assertFalse(x)
+* assertIs(a, b)
+* assertIsNot(a, b)
+* assertIsNone(x)
+* assertIsNotNone(x)
+* assertIn(a, b)
+* assertNotIn(a, b)
+
+```python
+import unittest
+from run import app
+from models import db, Post
+
+class TestAPI(unittest.TestCase):
+
+    # 创建测试客户端
+    def setUp(self):
+        # 通常我们会在另一个数据库里测试
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://besthope:@127.0.0.1:3306/pytest'
+        
+        self.app = app.test_client()
+        self.app_context = app.app_context()
+        self.app_context.push()
+        
+        db.create_all()
+        post = Post(title='test')
+        db.session.add(post)
+        db.session.commit()
+
+    # 移除数据库会话 关闭应用上下文
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+        self.app_context.pop()
+
+    def test_get_posts(self):
+        response = self.app.get('/api/posts')
+        data = response.get_json()
+
+        # 返回码检测
+        # assert 断言
+        self.assertEqual(response.status_code, 200)
+        # 返回数据是不是一个字典
+        self.assertIsInstance(data, dict)
+        # 数据中有 Posts 键
+        self.assertIn('Posts', data)
+        # Posts 值是一个列表
+        self.assertIsInstance(data['Posts'], list)
+
+
+if __name__ == '__main__':
+    unittest.main()
+
+```
+
+* 试试 [coverage](https://github.com/nedbat/coveragepy): 代码覆盖度工具用于统计单元测试检查了应用的多少功能.
+
+```
+coverage run -m unittest test.py
+```
+
+```
+coverage report
 ```
 
 ## 一些工程上的实现
@@ -230,15 +337,16 @@ pipreqs .
 ### 用户身份验证
 
 * Flask-Login：管理已登录用户的用户会话
+* Flask-HTTPAuth：HTTP 验证用户身份
 * Werkzeug：计算密码散列值并进行核对
 * itsdangerous：生成并核对加密安全令牌
 
-### 用户角色
-
-* 设计一个 Role 类
+详情见拓展阅读.
 
 ## 拓展阅读
 
 [Salted Password Hashing - Doing it Right](https://zyw271828.github.io/sphdr-zh-cn/ch00.html): 你可能会想, 为啥要大费周章用一套加密的登录机制, 简单地通过某种 hash 映射一下不就完了, 甚至设计了一套自己的算法. 阅读这个文章可能会让你改变一些看法.
 
 _Flask Web开发: 基于Python的Web应用开发实战. 第2版_: 这也是我们一开始推荐的 Flask 阅读图书. 你可以阅读第七章以及后面的章节(例如十四章讲的是RESTful接口)来进一步学习.
+
+[Hello Flask: 测试](https://tutorial.helloflask.com/test/). 这个开源教程对测试进行了比较详细的介绍.
