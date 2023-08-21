@@ -119,7 +119,7 @@ step 4: 把做好的功能合并到`develop`中
 
 `release`和`hotfix`分支离我们还比较遥远。。就不详述，有兴趣的同学可以参考本文最后的参考资料进行学习。
 
-<figure><img src="../../.gitbook/assets/image.png" alt=""><figcaption><p>全貌</p></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (2).png" alt=""><figcaption><p>全貌</p></figcaption></figure>
 
 ## 参考资料
 
@@ -129,4 +129,3 @@ step 4: 把做好的功能合并到`develop`中
 * [Github flow](http://scottchacon.com/2011/08/31/github-flow.html)
 * [Pro Git](http://git-scm.com/book/zh/)
 * [Git分支管理策略](http://www.ruanyifeng.com/blog/2012/07/git.html)
-
