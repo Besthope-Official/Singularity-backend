@@ -2,13 +2,23 @@
 
 ## 欢迎来到奇点工作室的暑期后端训练营!
 
+{% hint style="danger" %}
+Python 以及 Java 的相关项目已经布置. 如果你已经完成了本次的后端项目, 请将代码仓库的连接分享在这个 [Issue](https://github.com/Besthope-Official/Singularity-backend/issues/4) 下.
+
+**请注意项目的 DDL: 9月10日, 你或许会有1\~2天的 grace day.**
+{% endhint %}
+
 ## 训练营信息
 
 * 后端文档: [You are here](https://singularity-backend.gitbook.io/backend-online-doc/)
-* 训练营持续时间: 7月18日开营, 有六周的授课时间(至8月28日).
+* 训练营持续时间: 7月18日开营, 有六周的授课时间(至8月22日).
+  * 文档里只有五周课程的内容啊? 为什么是六周? 因为我们下标从零开始记.
 * 直播时间: 每周二下午3点, 预定可能会有 1 个小时半
   * 喜欢午睡的同学记得睡, 我们很贴心的.
-* 直播间地址: 所有的课程回放都会在[哔哩哔哩](https://space.bilibili.com/3494378444163577)上传.
+* **直播时间更新(从第二周的课程开始)**:
+  * Python 方向: 每周二下午3点不变
+  * **Java 方向: 每周二晚上9点**
+* 直播间地址: 所有的课程回放都会在[哔哩哔哩](https://space.bilibili.com/3494378444163577)上传(包括其它部门的课程).
 
 ## 训练营的目标
 

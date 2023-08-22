@@ -241,6 +241,8 @@ https://api.github.com/users/besthope-official
 
 互联网通信协议[HTTP 协议](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Overview#http\_%E6%98%AF%E6%97%A0%E7%8A%B6%E6%80%81%EF%BC%8C%E6%9C%89%E4%BC%9A%E8%AF%9D%E7%9A%84), 是一个_无状态协议_. 所有的状态都保存在服务器端, 如果客户端想要操作服务器, **必须通过某种途径**, 使得服务器端发生"**状态转移**"(State Transfer). 而这种状态转移是建立在表现层之上的. 所以, 你现在就能明白 REST 到底指的是个啥.
 
+<figure><img src="../.gitbook/assets/web-server.svg" alt=""><figcaption><p>请求与响应</p></figcaption></figure>
+
 至于客户端用到的手段, 只能是[HTTP 的请求方法](https://developer.mozilla.org/zh-CN/docs/web/http/methods)(request methods). 下面这五种方法对应的 **CRUD(增删改查)** 操作:
 
 | 请求方法   | 效果                 |
