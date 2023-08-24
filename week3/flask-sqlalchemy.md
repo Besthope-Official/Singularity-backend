@@ -141,6 +141,15 @@ class User(db.Model):
 
 * Flask-SQLAlchemy 要求每个模型都定义主键,  这一列经常命名为id.
 * 类变量 \_\_tablename\_\_ 定义在数据库中使用的表名(不指定 Flask 自己会创建).
+
+{% hint style="info" %}
+**命名惯例 Naming Convention**
+
+[SQL style guide](https://www.sqlstyle.guide/#tables) 提到了数据库名应当是小写且作为复数概念出现. 例如, 学生表就应该是 `students`, 同时也不要出现各种缩写 `stu`. 在 Python 里, 模型类应当首字母大写(驼峰)并且以单数形式出现.
+
+用 OOP 就容易明白了, 我们是对一个单个东西进行实例化.
+{% endhint %}
+
 * 其余的类变量都是该模型的属性, 定义为 db.Column 类的实例.
 * db.Column 类构造函数的第一个参数是数据库列和模型属性的类型. 下面两个表贴出了常用的类型:
 
@@ -268,11 +277,61 @@ class User(db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
 ```
 
-关系使用 users 表中的外键连接两行, 添加到User 模型中的 role\_id 列被定义为外键, 就是这个外键建立起了关系.
+* 关系使用 users 表中的外键连接两行, 添加到 User 模型中的 role\_id 列被定义为外键, 就是这个外键建立起了关系.
+* `db.relationship()` 中的 `backref` 参数向 User 模型中添加一个 role 属性, 从而定义反向关系.
+* 通过 User 实例的这个属性可以获取对应的 Role 模型对象, 而不用再通过 role\_id 外键获取.
 
-db.relationship() 中的 backref 参数向 User 模型中添加一个 role 属性, 从而定义反向关系. 通过User 实例的这个属性可以获取对应的 Role 模型对象, 而不用再通过 role\_id 外键获取.
+{% hint style="info" %}
+为什么要多此一举做外键关联啊? 我直接多设置一个字段, 查询的时候匹配一下不就完了.
 
-多数情况下, db.relationship() 都能自行找到关系中的外键, 但有时却无法确定哪一列是外键. 例如, 如果 User 模型中有两个或以上的列定义为 Role 模型的外键, SQLAlchemy 就不知道该使用哪一列. 如果无法确定外键, 就要为db.relationship() 提供额外的参数.
+在设计数据表的时候, 很多情况下, 表示一对多关系, 你都恨不得有一个 XX 类型的数组作为某一类型的字段. 外键关联干的事情类似于这种方式. 它能显著减少我们代码的复杂度.
+{% endhint %}
+
+例如, 在下面的例子中, 我们把 Staff 和 Role 进行了关联. 在我们写的 to\_json 文件里, 我们想知道 staff 的角色, 只需要调用 self.role.name 即可! 不需要你再在 Role 表里查询, 可谓是方便许多.
+
+```python
+class Role(db.Model):
+    __tablename__ = 'role'
+
+    id = db.Column(db.Integer, primary_key=True, info='Primary Key')
+    name = db.Column(db.String(255))
+
+
+
+class Staff(db.Model):
+    __tablename__ = 'staff'
+
+    id = db.Column(db.Integer, primary_key=True, info='Primary Key')
+    name = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text())
+    role_id = db.Column(db.ForeignKey('role.id'), nullable=False, index=True)
+    hyper_link = db.Column(db.String(255))
+
+    role = db.relationship('Role', primaryjoin='Staff.role_id == Role.id', backref='staffs')
+
+    def to_json(self):
+        json_post = {
+            'id' : self.id,
+            'name' : self.name,
+            'description' : self.description,
+            'role' : self.role.name,
+            'hyper_link' : self.hyper_link
+        }
+        return json_post
+```
+
+```python
+@api.route('/staff')
+def staff_info():
+    staff = Staff.query.all()
+    return jsonify({'data' : [person.to_json() for person in staff]})
+```
+
+<figure><img src="../.gitbook/assets/v2-f2560f634b1e09f81522f29f363827f7_r.jpg" alt=""><figcaption><p>优雅, 实在是太优雅了!</p></figcaption></figure>
+
+多数情况下, db.relationship() 都能自行找到关系中的外键, 但有时却无法确定哪一列是外键. 例如, 如果 User 模型中有两个或以上的列定义为 Role 模型的外键, SQLAlchemy 就不知道该使用哪一列. 如果无法确定外键, 就要为 db.relationship() 提供额外的参数.
+
+例如在上面的例子里是 `Staff.role_id == Role.id`, 没有二级联结. 这个其实就是默认的外键关联方式, 你也可以显式地把它写出来, 问题也不大.
 
 下表列出了常用的SQLAlchemy关系选项.
 
@@ -289,13 +348,97 @@ db.relationship() 中的 backref 参数向 User 模型中添加一个 role 属�
 除了一对多之外, 还有其他几种关系类型.
 
 * 一对一关系可以用前面介绍的一对多关系表示, 但调用 db.relationship() 时要把 uselist 设为 False, 把“多”变成“一”.
-* 多对一关系也可使用一对多表示, 对调两个表即可, 或者把外键和db.relationship() 都放在 “多”这一侧.
+* 多对一关系也可使用一对多表示, 对调两个表即可, 或者把外键和 db.relationship() 都放在 “多”这一侧.
 
-最复杂的关系类型是多对多，需要用到第三张表，这个表称为**关联表**（或 联结表）。
+最复杂的关系类型是多对多, 需要用到第三张表, 这个表称为**关联表** (或联结表).
 
 例如, 你要表示学生和课程的关系. 显然一个学生可以选多门课程, 一个课程也可以包含多名学生.
 
-你需要建立一个 registrations 的关联表, 里面包含 student\_id 和 course\_id, 构建起学生和课程的映射. 查询多对多关系时, 现在关联表里找到这名学生的所有记录, 然后按照多到一的方向遍历课程和注册之间的一对多关系.(听起来是挺绕的)
+你需要建立一个 enrollment 的关联表, 里面包含 student\_id(对应 students 表里的 id) 和 course\_id, 构建起学生和课程的映射.
+
+```sql
+CREATE TABLE
+    `enrollment` (
+        `student_id` int NOT NULL,
+        `course_id` int NOT NULL,
+        PRIMARY KEY (`student_id`, `course_id`),
+        KEY `course_id` (`course_id`),
+        CONSTRAINT `enrollment_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`),
+        CONSTRAINT `enrollment_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`)
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '选课情况关联表'
+```
+
+查询多对多关系时, 现在关联表里找到这名学生的所有记录, 然后按照多到一的方向遍历课程和注册之间的一对多关系.(听起来是挺绕的)
+
+```python
+class Course(db.Model):
+    __tablename__ = 'courses'
+
+    id = db.Column(db.Integer, primary_key=True, info='Primary Key')
+    name = db.Column(db.String(255))
+
+    students = db.relationship('Student', secondary='enrollment', backref='courses')
+    
+
+class Student(db.Model):
+    __tablename__ = 'students'
+
+    id = db.Column(db.Integer, primary_key=True, info='Primary Key')
+    student_name = db.Column(db.String(255))
+
+
+t_enrollment = db.Table(
+    'enrollment',
+    db.Column('student_id', db.ForeignKey('students.id'), primary_key=True, nullable=False),
+    db.Column('course_id', db.ForeignKey('courses.id'), primary_key=True, nullable=False, index=True)
+)
+```
+
+注意在课程模型类里我们有一个 students 字段, 它对应一个一对多关系(一个课程对应多个学生), 你也可以认为它是一个 Student 类实例的一个数组!
+
+```python
+students = db.relationship('Student', secondary='enrollment', backref='courses')
+```
+
+* 你要为它传入一个 secondary(二级表) 参数, 也就是我们上面说的**关联表**的名称.
+* backref 构建**反向引用**. 这样 Student 类的实例就有 courses 的一个一对多关系.
+
+这样, 我们就可以来实现多对多关系的查询:
+
+* 例如访问 `/course?id=1` 返回 id 为 1 学生的选课情况.
+
+```python
+@api.route('/course')
+def course_info():
+    student_id = request.args.get('id')
+    
+    if student_id is None:
+        return {'message' : 'Missing student id.'}, 400
+    
+    student = Student.query.get(int(student_id))
+    
+    # 获取 student 了以后可以直接调用 courses
+    course_info = [course.name for course in student.courses]
+    
+    return jsonify(course_info)
+```
+
+类似的可以返回选某一课程的学生:
+
+```python
+@api.route('/student')
+def student_info():
+    course_id = request.args.get('id')
+    
+    if course_id is None:
+        return {'message' : 'Missing course id.'}, 400
+    
+    course = Course.query.get(int(course_id))
+    
+    student_info = [student.student_name for student in course.students]
+    
+    return jsonify(student_info)
+```
 
 数据库设计和用法相关的话题十分重要, 有大量相关的图书, 本节只是一个最简单的介绍.
 
@@ -303,7 +446,9 @@ db.relationship() 中的 backref 参数向 User 模型中添加一个 role 属�
 
 给各位一段 Snippet, 大家可以按照自身需求修改, 不用自己去写 Model 类.
 
-推荐 [flask-sqlacodegen](https://github.com/ksindi/flask-sqlacodegen), 安装通过 Git 安装比较好(`pip` 安装不知道为什么在我这里会出现兼容问题)
+* 如果你乐意, 可以帮我写个 argparse 让它更灵活些.
+
+推荐 [flask-sqlacodegen](https://github.com/ksindi/flask-sqlacodegen), 安装通过 Git 安装比较好(`pip` 安装不知道为什么在我这里会出现兼容问题, 也就是一直是 sqlacodegen 而不是 flask 的这个fork版本)
 
 ```bash
 git clone https://github.com/ksindi/flask-sqlacodegen.git
