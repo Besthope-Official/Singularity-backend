@@ -62,9 +62,16 @@ git commit
 
 ## 远端操作
 
+怎么让自己本地的 Git 仓库能够上传到服务器? 你需要将本地和远端进行关联.
+
 * `git remote`: 列出远端
+  * `-v` 选项能够将已知远端的名称和 url 一同显示.
 * `git remote add <name> <url>`: 添加一个远端
 * `git push <remote> <local branch>:<remote branch>`: 将对象传送至远端并更新远端引用
+  * 通常来说 `git push -u origin --all` 这样就够用
+
+将本地 Git 仓库上传到 Github 上创建的空仓库, 以上几步即可完成.
+
 * `git branch --set-upstream-to=<remote>/<remote branch>`: 创建本地和远端分支的关联关系
 * `git fetch`: 从远端获取对象/索引
 * `git pull`: 相当于 `git fetch; git merge`
