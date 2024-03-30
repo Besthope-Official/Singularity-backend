@@ -3,7 +3,7 @@
 ## 写在前面 <a href="#before" id="before"></a>
 
 * [训练营说明](README.md)
-* [求生手册](xie-zai-qian-mian/qiu-sheng-shou-ce.md)
+* [求生手册](before/survival-tips.md)
 
 ## 第一周 Git/基础拾遗 <a href="#week1" id="week1"></a>
 
@@ -44,6 +44,7 @@
 * [Linux 操作](week5/linux.md)
 * [服务器部署](week5/deploy.md)
 
-***
+## SWUFE-OJ
 
-* [总结](summary.md)
+* [说明](swufe-oj/readme.md)
+* [用户模块](swufe-oj/account.md)
